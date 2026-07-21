@@ -265,8 +265,8 @@ Criar a base da aplicação e implementar autenticação.
 - [x] Criar Solution
 - [x] Criar projetos da Clean Architecture
 - [x] Configurar PostgreSQL
-- [ ] Configurar Docker
-- [ ] Configurar EF Core
+- [x] Configurar Docker
+- [x] Configurar EF Core
 - [ ] Primeira Migration
 - [ ] Criar User
 - [ ] Cadastro

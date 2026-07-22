@@ -267,8 +267,8 @@ Criar a base da aplicação e implementar autenticação.
 - [x] Configurar PostgreSQL
 - [x] Configurar Docker
 - [x] Configurar EF Core
-- [ ] Primeira Migration
-- [ ] Criar User
+- [x] Primeira Migration
+- [x] Criar User
 - [ ] Cadastro
 - [ ] Login
 - [ ] JWT

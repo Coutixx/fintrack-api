@@ -1,4 +1,6 @@
+using FinTrack.Application.Common.Interfaces;
 using FinTrack.Infrastructure.Data;
+using FinTrack.Infrastructure.Security;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +14,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
     configuration.GetConnectionString("PostgresConnection")));
+
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }

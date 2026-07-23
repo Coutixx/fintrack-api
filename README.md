@@ -1,6 +1,6 @@
 # 🏆 FinTrack API
 
-Sistema de gestão financeira pessoal desenvolvido em **ASP.NET Core (.NET 10)** utilizando **Minimal APIs**, **Clean Architecture (Feature-First)** e **Entity Framework Core**.
+Sistema de gestão financeira pessoal desenvolvido em **ASP.NET Core (.NET 10)** utilizando **Controllers**, **Clean Architecture (Feature-First)** e **Entity Framework Core**.
 
 O objetivo deste projeto é desenvolver uma API completa para gerenciamento financeiro, consolidando conceitos modernos de arquitetura de software, modelagem de domínio, validações desacopladas e regras de negócio reais.
 
@@ -16,7 +16,7 @@ Durante o desenvolvimento deste projeto serão consolidados os seguintes conceit
 
 - Clean Architecture
 - Organização Feature-First
-- Minimal APIs
+- Controllers
 - Entity Framework Core
 - PostgreSQL
 - Docker (infraestrutura do banco)
@@ -32,7 +32,7 @@ Durante o desenvolvimento deste projeto serão consolidados os seguintes conceit
 # 📌 Tecnologias
 
 - ASP.NET Core (.NET 10)
-- Minimal APIs
+- Controllers
 - Entity Framework Core
 - PostgreSQL
 - Docker
@@ -67,7 +67,7 @@ FinTrack.sln
 │   │   └── Persistence
 │   │
 │   └── FinTrack.Api
-│       ├── Endpoints
+│       ├── Controllers
 │       ├── Extensions
 │       ├── ExceptionHandlers
 │       └── Program.cs
@@ -269,7 +269,7 @@ Criar a base da aplicação e implementar autenticação.
 - [x] Configurar EF Core
 - [x] Primeira Migration
 - [x] Criar User
-- [ ] Cadastro
+- [x] Cadastro
 - [ ] Login
 - [ ] JWT
 - [ ] Testes unitários da autenticação

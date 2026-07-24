@@ -56,7 +56,7 @@ FinTrack.sln
 │   ├── FinTrack.Application
 │   │   ├── Common
 │   │   └── Features
-│   │       ├── Authentication
+│   │       ├── Auth
 │   │       ├── Accounts
 │   │       ├── Categories
 │   │       └── Transactions

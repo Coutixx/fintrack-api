@@ -10,10 +10,12 @@ namespace FinTrack.Application.Features.Auth.Register;
 public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
     private readonly IUserRepository _userRepository;
+    private readonly ITokenService _tokenService;
 
-    public RegisterUserHandler(IUserRepository userRepository)
+    public RegisterUserHandler(IUserRepository userRepository, ITokenService tokenService)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
     }
 
     public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -28,7 +30,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Register
         user.PasswordHash = await Task.Run(() => BCrypt.Net.BCrypt.HashPassword(request.Password));
         user.CreatedAt = DateTime.UtcNow;
 
-        string token = "token";
+        var token = _tokenService.GenerateToken(user);
 
         await _userRepository.AddAsync(user);
 

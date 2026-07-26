@@ -291,8 +291,8 @@ Implementar o gerenciamento de contas financeiras.
 
 ### Entregas
 
-- [ ] Criar Account
-- [ ] FluentValidation
+- [x] Criar Account
+- [x] FluentValidation
 - [ ] CRUD completo
 - [ ] Isolamento por usuário
 - [ ] Testes unitários

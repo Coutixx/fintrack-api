@@ -16,7 +16,9 @@ public static class DependencyInjection
     configuration.GetConnectionString("PostgresConnection")
     ?? throw new InvalidOperationException("Connection String não configurada.")));
 
+        services.AddHttpContextAccessor();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IUserContext, UserContext>();
 
         return services;
     }

@@ -23,6 +23,6 @@ public class AccountConfiguration
         builder.Property(a => a.Type).IsRequired().HasMaxLength(50);
 
         // Relacionamento 1:N
-        builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId);
+        builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId).IsRequired(false);
     }
 }

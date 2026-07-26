@@ -22,9 +22,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(RegisterUserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register([FromBody] RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var response = await _sender.Send(command, cancellationToken);
+        var response = await _sender.Send(request, cancellationToken);
 
         return Created($"Register/{response.userId}", response);
     }
@@ -33,9 +33,10 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(LoginUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login([FromBody] LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var response = await _sender.Send(command, cancellationToken);
+        var response = await _sender.Send(request, cancellationToken);
 
         return Ok(response);
     }

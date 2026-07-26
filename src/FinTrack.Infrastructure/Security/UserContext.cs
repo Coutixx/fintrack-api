@@ -18,7 +18,9 @@ public class UserContext : IUserContext
     public Guid UserId
     {
         get {
-            var userId = _httpContextAcessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _httpContextAcessor.HttpContext?.User?.FindFirst("sub")?.Value
+                ?? _httpContextAcessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             return userId != null ? Guid.Parse(userId) : Guid.Empty;
         }
     }

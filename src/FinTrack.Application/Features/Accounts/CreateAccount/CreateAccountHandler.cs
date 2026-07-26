@@ -18,6 +18,9 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Create
 
     public async Task<CreateAccountResponse> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
+        // Adicione essa linha temporária para inspecionar o valor real no terminal
+        Console.WriteLine($"[DEBUG FINTRACK] O ID extraído do contexto é: {_userContext.UserId}");
+
         var account = new Account {
             Id = Guid.NewGuid(),
             Name = request.Name,

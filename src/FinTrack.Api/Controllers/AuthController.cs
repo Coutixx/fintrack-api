@@ -1,6 +1,4 @@
-using FinTrack.Application.Features.Auth.Login;
-using FinTrack.Application.Features.Auth.Register;
-
+using FinTrack.Application.Features.Auth;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +17,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Register")]
-    [ProducesResponseType(typeof(RegisterUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromBody] RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand request, CancellationToken cancellationToken)
     {
         var response = await _sender.Send(request, cancellationToken);
 
@@ -30,11 +28,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Login")]
-    [ProducesResponseType(typeof(LoginUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login([FromBody] LoginCommand request, CancellationToken cancellationToken)
     {
         var response = await _sender.Send(request, cancellationToken);
 

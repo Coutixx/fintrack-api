@@ -1,33 +1,32 @@
 using System.Security.Authentication;
-
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Auth.Login;
+using FinTrack.Application.Features.Auth;
 using FinTrack.Domain.Entities;
 
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Auth.Login;
 
-public class LoginUserHandlerTests
+public class HandlerTests
 {
     private readonly IUserRepository _userRepositoryMock;
     private readonly ITokenService _tokenServiceMock;
     private readonly IPasswordHasher _passwordHasherMock;
-    private readonly LoginUserHandler _handler;
+    private readonly LoginHandler _handler;
 
-    public LoginUserHandlerTests()
+    public HandlerTests()
     {
         _userRepositoryMock = Substitute.For<IUserRepository>();
         _tokenServiceMock = Substitute.For<ITokenService>();
         _passwordHasherMock = Substitute.For<IPasswordHasher>();
 
-        _handler = new LoginUserHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
+        _handler = new LoginHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
     }
 
     [Fact]
     public async Task Handle_UserDoesNotExist_ShouldThrowInvalidCredentialException()
     {
-        var request = new LoginUserCommand("email@email.com", "password123");
+        var request = new LoginCommand("email@email.com", "password123");
 
         _userRepositoryMock
             .GetByEmailAsync(request.Email, Arg.Any<CancellationToken>())
@@ -41,7 +40,7 @@ public class LoginUserHandlerTests
     [Fact]
     public async Task Handle_ValidCredentials_ShouldReturnToken()
     {
-        var request = new LoginUserCommand("email@email.com", "password123");
+        var request = new LoginCommand("email@email.com", "password123");
 
         var user = new User { Email = "email@email.com" };
 
@@ -66,7 +65,7 @@ public class LoginUserHandlerTests
     [Fact]
     public async Task Handle_InvalidPassword_ShouldThrowInvalidCredentialException()
     {
-        var request = new LoginUserCommand("email@email.com", "password123");
+        var request = new LoginCommand("email@email.com", "password123");
 
         var user = new User { Email = "email@email.com", PasswordHash = "fake-hash" };
 

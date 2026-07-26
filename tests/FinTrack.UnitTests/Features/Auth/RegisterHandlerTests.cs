@@ -1,31 +1,24 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Auth.Register;
+using FinTrack.Application.Features.Auth;
 using FinTrack.Domain.Entities;
-
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Auth.Register;
 
-public class RegisterUserHandlerTests
+public class HandlerTests
 {
-    private readonly IUserRepository _userRepositoryMock;
-    private readonly ITokenService _tokenServiceMock;
-    private readonly IPasswordHasher _passwordHasherMock;
-    private readonly RegisterUserHandler _handler;
+    private readonly IUserRepository _userRepositoryMock = Substitute.For<IUserRepository>();
+    private readonly ITokenService _tokenServiceMock = Substitute.For<ITokenService>();
+    private readonly IPasswordHasher _passwordHasherMock = Substitute.For<IPasswordHasher>();
+    private readonly RegisterHandler _handler;
 
-    public RegisterUserHandlerTests()
-    {
-        _userRepositoryMock = Substitute.For<IUserRepository>();
-        _tokenServiceMock = Substitute.For<ITokenService>();
-        _passwordHasherMock = Substitute.For<IPasswordHasher>();
-
-        _handler = new RegisterUserHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
-    }
+    public HandlerTests() =>
+        _handler = new RegisterHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
 
     [Fact]
     public async Task Handle_ValidRequest_ShouldCreateUser()
     {
-        var request = new RegisterUserCommand("Coutinho", "email@email.com", "password123");
+        var request = new RegisterCommand("Coutinho", "email@email.com", "password123");
 
         _userRepositoryMock
             .ExistingByEmailAsync(request.Email, Arg.Any<CancellationToken>())
@@ -45,7 +38,7 @@ public class RegisterUserHandlerTests
     [Fact]
     public async Task Handle_ValidRequest_ShouldCreateUser_AndHashPassword()
     {
-        var request = new RegisterUserCommand("Coutinho", "email@email.com", "password123");
+        var request = new RegisterCommand("Coutinho", "email@email.com", "password123");
 
         _userRepositoryMock
             .ExistingByEmailAsync(request.Email, Arg.Any<CancellationToken>())

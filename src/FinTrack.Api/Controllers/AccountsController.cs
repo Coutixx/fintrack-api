@@ -1,4 +1,4 @@
-using FinTrack.Application.Features.Accounts.CreateAccount;
+using FinTrack.Application.Features.Accounts;
 
 using MediatR;
 

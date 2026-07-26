@@ -12,27 +12,50 @@ charset = utf-8
 [*.{csproj,fsproj,vbproj,proj,slnx,props,targets,config,nuspec,xml,json}]
 indent_size = 2
 
-#### Regras de Código e Formatação para C# ####
+# Regras de Código e Formatação para C#
 [*.cs]
+
 # Diagnósticos
 dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0005.severity = warning
 
 # Organização de Usings e Namespace
-dotnet_separate_import_directive_groups = true
+dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
 csharp_using_directive_placement = outside_namespace:silent
 csharp_style_namespace_declarations = file_scoped:warning
 
-# Sintaxes Modernas (.NET / C#)
+# Modernidades do C#
 csharp_style_prefer_primary_constructors = true:suggestion
 csharp_prefer_simple_using_statement = true:suggestion
 csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
 csharp_style_prefer_switch_expression = true:suggestion
+csharp_style_expression_bodied_methods = when_possible:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_constructors = true:suggestion
 
-# Formatação e Quebras de Linha
-csharp_new_line_before_open_brace = methods, properties, types
+# Formatação, Chaves e Quebras de Linha
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
+
+# Espaçamento Automático
+csharp_space_after_cast = false
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_after_comma = true
+csharp_space_after_dot = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_before_comma = false
+csharp_space_before_dot = false
+csharp_space_before_open_square_brackets = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
 
 # Nomenclatura para Private Fields (_camelCase)
 dotnet_naming_rule.private_fields_should_be__camelcase.severity = suggestion
@@ -43,9 +66,3 @@ dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 dotnet_naming_style._camelcase.required_prefix = _
 dotnet_naming_style._camelcase.capitalization = camel_case
-
-# Marca usings desnecessários como erro/aviso para remoção fácil
-dotnet_diagnostic.IDE0005.severity = warning
-
-# Força a remoção de usings não utilizados
-csharp_style_unused_value_expression_statement_preference = discard_variable:silent

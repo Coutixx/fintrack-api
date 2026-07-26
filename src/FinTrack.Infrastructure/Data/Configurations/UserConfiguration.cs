@@ -22,13 +22,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Email).IsRequired().HasMaxLength(150);
 
         // Regra de negócio Índice Único
-        builder.HasIndex(u => u.Email)
-        .IsUnique();
+        builder.HasIndex(u => u.Email).IsUnique();
 
         // PasswordHash (Segurança)
-        builder.Property(u => u.PasswordHash)
-        .IsRequired()
-        .HasMaxLength(255);
+        builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
 
         builder.HasQueryFilter(u => u.DeletedAt == null);
     }

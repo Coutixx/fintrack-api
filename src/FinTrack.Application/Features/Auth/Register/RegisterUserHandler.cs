@@ -1,7 +1,7 @@
+using System.Security.Authentication;
+
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Domain.Entities;
-
-using Mapster;
 
 using MediatR;
 
@@ -11,28 +11,33 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Register
 {
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public RegisterUserHandler(IUserRepository userRepository, ITokenService tokenService)
+    public RegisterUserHandler(IUserRepository userRepository, ITokenService tokenService, IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        if (await _userRepository.ExistingByEmailAsync(request.Email))
-            throw new Exception("E-mail já cadastrado.");
+        if (await _userRepository.ExistingByEmailAsync(request.Email, cancellationToken))
+            throw new InvalidCredentialException("E-mail já cadastrado.");
 
-        // Mapeamento da request para User
-        var user = request.Adapt<User>();
+        var PasswordHash = _passwordHasher.Hash(request.Password);
 
-        user.Id = Guid.NewGuid();
-        user.PasswordHash = await Task.Run(() => BCrypt.Net.BCrypt.HashPassword(request.Password));
-        user.CreatedAt = DateTime.UtcNow;
-
-        var token = _tokenService.GenerateToken(user);
+        var user = new User {
+            Email = request.Email,
+            Name = request.Name,
+            PasswordHash = PasswordHash,
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _userRepository.AddAsync(user);
+
+        var token = _tokenService.GenerateToken(user);
 
         return new RegisterUserResponse(user.Id, token);
     }

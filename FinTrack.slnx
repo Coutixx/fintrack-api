@@ -5,4 +5,7 @@
     <Project Path="src/FinTrack.Domain/FinTrack.Domain.csproj" />
     <Project Path="src/FinTrack.Infrastructure/FinTrack.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FinTrack.UnitTests/FinTrack.UnitTests.csproj" />
+  </Folder>
 </Solution>

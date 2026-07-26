@@ -1,3 +1,4 @@
+using FinTrack.Application.Features.Auth.Login;
 using FinTrack.Application.Features.Auth.Register;
 
 using MediatR;
@@ -21,10 +22,21 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(RegisterUserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+    public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        var response = await _sender.Send(command);
+        var response = await _sender.Send(command, cancellationToken);
 
-        return CreatedAtAction(nameof(Register), new { id = response.UserId }, response);
+        return Created($"Register/{response.userId}", response);
+    }
+
+    [HttpPost("Login")]
+    [ProducesResponseType(typeof(LoginUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+    {
+        var response = await _sender.Send(command, cancellationToken);
+
+        return Ok(response);
     }
 }

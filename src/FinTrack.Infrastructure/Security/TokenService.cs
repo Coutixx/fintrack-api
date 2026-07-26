@@ -1,46 +1,46 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-
-using Claim = System.Security.Claims.Claim;
-using ClaimTypes = System.Security.Claims.ClaimTypes;
-
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Domain.Entities;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace FinTrack.Infrastructure.Security;
 
 public class TokenService : ITokenService
 {
-    private readonly IConfiguration _configuration;
+    private readonly SigningCredentials _creds;
+    private readonly JsonWebTokenHandler _tokenHandler;
+    private IConfiguration _configuration;
     public TokenService(IConfiguration configuration)
     {
         _configuration = configuration;
+        var secret = configuration["JwtSettings:SECRET"]
+            ?? throw new InvalidOperationException("Secret JWT não configurada.");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        _creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        _tokenHandler = new JsonWebTokenHandler();
     }
 
     public string GenerateToken(User user)
     {
-        var secret = _configuration["JwtSettings:SECRET"]
-        ?? throw new InvalidOperationException("Secret JWT não configurada.");
+        if (user is null) throw new ArgumentNullException(nameof(user));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expirationHours = _configuration.GetValue<int>("JwtSettings:ExpirationHours");
+        if (expirationHours <= 0) expirationHours = 1;
 
-        var claims = new List<System.Security.Claims.Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, "User")
+        var descriptor = new SecurityTokenDescriptor {
+            Claims = new Dictionary<string, object>
+            {
+                { ClaimTypes.NameIdentifier, user.Id.ToString() },
+                { ClaimTypes.Email, user.Email },
+                { ClaimTypes.Role, "User" }
+            },
+            Expires = DateTime.UtcNow.AddHours(expirationHours),
+            SigningCredentials = _creds
         };
 
-        var tokenDescriptor = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+        return _tokenHandler.CreateToken(descriptor);
     }
 }

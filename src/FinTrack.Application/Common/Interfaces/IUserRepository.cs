@@ -4,7 +4,7 @@ namespace FinTrack.Application.Common.Interfaces;
 
 public interface IUserRepository
 {
-    Task<bool> ExistingByEmailAsync(string email);
-    Task<User> GetByEmailAsync(string email);
+    Task<bool> ExistingByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task AddAsync(User user);
 }

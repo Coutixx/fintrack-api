@@ -270,9 +270,9 @@ Criar a base da aplicação e implementar autenticação.
 - [x] Primeira Migration
 - [x] Criar User
 - [x] Cadastro
-- [ ] Login
-- [ ] JWT
-- [ ] Testes unitários da autenticação
+- [x] Login
+- [x] JWT
+- [x] Testes unitários da autenticação
 
 ### Critérios de conclusão
 

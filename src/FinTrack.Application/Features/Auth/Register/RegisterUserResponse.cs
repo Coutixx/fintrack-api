@@ -1,7 +1,7 @@
 namespace FinTrack.Application.Features.Auth.Register;
 
 public record RegisterUserResponse(
-    Guid UserId,
+    Guid userId,
     string Token
 );
 

@@ -1,7 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-
 using DotNetEnv;
-
 using FinTrack.Application;
 using FinTrack.Infrastructure;
 

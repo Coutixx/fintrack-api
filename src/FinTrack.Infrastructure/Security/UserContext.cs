@@ -1,7 +1,5 @@
 using System.Security.Claims;
-
 using FinTrack.Application.Common.Interfaces;
-
 using Microsoft.AspNetCore.Http;
 
 namespace FinTrack.Infrastructure.Security;
@@ -17,7 +15,8 @@ public class UserContext : IUserContext
 
     public Guid UserId
     {
-        get {
+        get
+        {
             var userId = _httpContextAcessor.HttpContext?.User?.FindFirst("sub")?.Value
                 ?? _httpContextAcessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

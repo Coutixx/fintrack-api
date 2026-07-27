@@ -1,5 +1,4 @@
 using FinTrack.Domain.Entities;
-
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinTrack.Infrastructure.Data.Configurations;

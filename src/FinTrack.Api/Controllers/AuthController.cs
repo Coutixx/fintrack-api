@@ -1,6 +1,5 @@
 using FinTrack.Application.Features.Auth;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinTrack.Api.Controllers;

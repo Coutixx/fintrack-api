@@ -6,14 +6,8 @@ namespace FinTrack.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountsController : ControllerBase
+public class AccountsController(ISender sender) : ControllerBase
 {
-    private readonly ISender _sender;
-
-    public AccountsController(ISender sender)
-    {
-        _sender = sender;
-    }
 
     [HttpPost]
     [ProducesResponseType(typeof(CreateAccountResponse), StatusCodes.Status201Created)]
@@ -21,20 +15,30 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateAccountCommand request, CancellationToken cancellationToken)
     {
-        var response = await _sender.Send(request, cancellationToken);
+        var response = await sender.Send(request, cancellationToken);
 
-        return CreatedAtRoute("GetAccountById", new { id = response.Id }, response);
+        return CreatedAtRoute("GetByIdAccount", new { id = response.Id }, response);
     }
 
-    [HttpGet("{id}", Name = "GetAccountById")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet(Name = "GetAllAccounts")]
+    [ProducesResponseType(typeof(GetAllAccountsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll([FromQuery] GetAllAccountsQuery request, CancellationToken cancellationToken)
     {
-        return Ok();
+        var response = await sender.Send(request, cancellationToken);
+        return Ok(response);
     }
 
-    [HttpGet]
-    public IActionResult Teste()
+    [HttpGet("{id}", Name = "GetByIdAccount")]
+    [ProducesResponseType(typeof(GetByIdAccountResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        return Ok("O Controller está vivo!");
+        var query = new GetByIdAccountQuery(id);
+        var response = await sender.Send(query, cancellationToken);
+        return Ok(response);
     }
 }

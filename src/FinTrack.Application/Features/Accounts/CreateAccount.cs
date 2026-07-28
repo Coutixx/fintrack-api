@@ -8,7 +8,7 @@ namespace FinTrack.Application.Features.Accounts;
 public record CreateAccountCommand(
     string Name,
     string Type,
-    decimal InitialBalance
+    decimal? InitialBalance
 ) : IRequest<CreateAccountResponse>;
 
 public record CreateAccountResponse(Guid Id);
@@ -26,7 +26,7 @@ public class CreateAccountValidator : AbstractValidator<CreateAccountCommand>
             .MaximumLength(50).WithMessage("O tipo da conta pode ter no máximo 50 caracteres.");
 
         RuleFor(x => x.InitialBalance)
-            .NotEmpty().WithMessage("O valor saldo inicial é obrigatório")
+            .NotNull().WithMessage("O valor saldo inicial é obrigatório")
             .GreaterThanOrEqualTo(0).WithMessage("O saldo inicial não pode ser negativo.");
     }
 }
@@ -41,11 +41,22 @@ public class CreateAccountHandler(IAccountRepository accountRepository, IUserCon
             Id = Guid.NewGuid(),
             Name = request.Name,
             Type = request.Type,
-            InitialBalance = request.InitialBalance,
-            CurrentBalance = request.InitialBalance,
+            InitialBalance = request.InitialBalance ?? 0,
+            CurrentBalance = request.InitialBalance ?? 0,
             UserId = userContext.UserId,
             CreatedAt = DateTime.UtcNow
         };
+
+        // Teste rápido dentro do seu CreateAccountHandler:
+        var validator = new CreateAccountValidator(); // substitua pelo nome do seu validador
+        var validationResult = await validator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+        {
+            // Se entrar aqui, o validador funciona, mas o MediatR não estava chamando ele sozinho!
+            throw new Exception(validationResult.Errors.First().ErrorMessage);
+        }
+
 
         await accountRepository.AddAsync(account);
         return new CreateAccountResponse(account.Id);

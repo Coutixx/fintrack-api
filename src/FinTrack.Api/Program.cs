@@ -12,7 +12,7 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddAplication();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

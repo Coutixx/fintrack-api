@@ -12,7 +12,7 @@ public record RegisterCommand(
     string Password
 ) : IRequest<RegisterResponse>;
 
-public record RegisterResponse(Guid userId, string Token);
+public record RegisterResponse(Guid Id, string Token);
 
 public class RegisterValidator : AbstractValidator<RegisterCommand>
 {

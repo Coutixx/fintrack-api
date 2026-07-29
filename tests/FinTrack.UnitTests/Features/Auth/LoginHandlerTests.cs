@@ -9,26 +9,20 @@ namespace FinTrack.UnitTests.Features.Auth.Login;
 
 public class HandlerTests
 {
-    private readonly IUserRepository _userRepositoryMock;
-    private readonly ITokenService _tokenServiceMock;
-    private readonly IPasswordHasher _passwordHasherMock;
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
+    private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
     private readonly LoginHandler _handler;
 
-    public HandlerTests()
-    {
-        _userRepositoryMock = Substitute.For<IUserRepository>();
-        _tokenServiceMock = Substitute.For<ITokenService>();
-        _passwordHasherMock = Substitute.For<IPasswordHasher>();
-
-        _handler = new LoginHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
-    }
+    public HandlerTests() =>
+        _handler = new LoginHandler(_userRepository, _tokenService, _passwordHasher);
 
     [Fact]
     public async Task Handle_UserDoesNotExist_ShouldThrowInvalidCredentialException()
     {
         var request = new LoginCommand("email@email.com", "password123");
 
-        _userRepositoryMock
+        _userRepository
             .GetByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<User?>(null));
 
@@ -44,15 +38,15 @@ public class HandlerTests
 
         var user = new User { Email = "email@email.com" };
 
-        _userRepositoryMock
+        _userRepository
             .GetByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<User?>(user));
 
-        _passwordHasherMock
+        _passwordHasher
             .Verify(request.Password, Arg.Any<string>())
             .Returns(true);
 
-        _tokenServiceMock
+        _tokenService
             .GenerateToken(user)
             .Returns("fake-token");
 
@@ -69,17 +63,15 @@ public class HandlerTests
 
         var user = new User { Email = "email@email.com", PasswordHash = "fake-hash" };
 
-        _userRepositoryMock
+        _userRepository
             .GetByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<User?>(user));
 
-        _passwordHasherMock
+        _passwordHasher
             .Verify(request.Password, Arg.Any<string>())
             .Returns(false);
 
         await Assert.ThrowsAsync<InvalidCredentialException>(() =>
             _handler.Handle(request, CancellationToken.None));
     }
-
-
 }

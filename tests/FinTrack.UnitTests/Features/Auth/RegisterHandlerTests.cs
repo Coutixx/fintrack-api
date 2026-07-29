@@ -7,32 +7,35 @@ namespace FinTrack.UnitTests.Features.Auth.Register;
 
 public class HandlerTests
 {
-    private readonly IUserRepository _userRepositoryMock = Substitute.For<IUserRepository>();
-    private readonly ITokenService _tokenServiceMock = Substitute.For<ITokenService>();
-    private readonly IPasswordHasher _passwordHasherMock = Substitute.For<IPasswordHasher>();
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
+    private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
     private readonly RegisterHandler _handler;
 
     public HandlerTests() =>
-        _handler = new RegisterHandler(_userRepositoryMock, _tokenServiceMock, _passwordHasherMock);
+        _handler = new RegisterHandler(_userRepository, _tokenService, _passwordHasher);
 
     [Fact]
     public async Task Handle_ValidRequest_ShouldCreateUser()
     {
         var request = new RegisterCommand("Coutinho", "email@email.com", "password123");
 
-        _userRepositoryMock
+        _userRepository
             .ExistingByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false));
 
-        _userRepositoryMock
+        _userRepository
             .AddAsync(Arg.Any<User>())
             .Returns(Task.CompletedTask);
 
-        await _handler.Handle(request, CancellationToken.None);
+        var response = await _handler.Handle(request, CancellationToken.None);
+        Assert.NotNull(response);
+        Assert.NotEqual(Guid.Empty, response.Id);
 
-        await _userRepositoryMock.Received(1).AddAsync(Arg.Is<User>(u =>
+        await _userRepository.Received(1).AddAsync(Arg.Is<User>(u =>
             u.Name == request.Name &&
-            u.Email == request.Email));
+            u.Email == request.Email
+        ));
     }
 
     [Fact]
@@ -40,18 +43,18 @@ public class HandlerTests
     {
         var request = new RegisterCommand("Coutinho", "email@email.com", "password123");
 
-        _userRepositoryMock
+        _userRepository
             .ExistingByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(false));
 
-        _passwordHasherMock
+        _passwordHasher
                     .Hash(request.Password).Returns("fake-hash");
 
         await _handler.Handle(request, CancellationToken.None);
 
-        _passwordHasherMock.Received(1).Hash(request.Password);
+        _passwordHasher.Received(1).Hash(request.Password);
 
-        await _userRepositoryMock.Received(1).AddAsync(Arg.Is<User>(u =>
+        await _userRepository.Received(1).AddAsync(Arg.Is<User>(u =>
             u.Name == request.Name &&
             u.Email == request.Email &&
             u.PasswordHash == "fake-hash"));

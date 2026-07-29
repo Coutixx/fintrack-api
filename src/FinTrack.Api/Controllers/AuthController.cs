@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
     {
         var response = await _sender.Send(request, cancellationToken);
 
-        return Created($"Register/{response.userId}", response);
+        return Created($"Register/{response.Id}", response);
     }
 
     [HttpPost("Login")]

@@ -6,7 +6,13 @@ namespace FinTrack.Application.Features.Accounts;
 
 public record GetByIdAccountQuery(Guid Id) : IRequest<GetByIdAccountResponse>;
 
-public record GetByIdAccountResponse(Guid Id, string Name, string Type, decimal CurrentBalance, DateTime CreatedAt);
+public record GetByIdAccountResponse(
+    Guid Id,
+    string Name,
+    string Type,
+    decimal CurrentBalance,
+    DateTime CreatedAt
+    );
 
 public class GetByIdAccountValidator : AbstractValidator<GetByIdAccountQuery>
 {
@@ -23,6 +29,12 @@ public class GetByIdAccountHandler(IAccountRepository accountsRepository, IUserC
         var account = await accountsRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken);
         if (account is null) throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
 
-        return new GetByIdAccountResponse(account.Id, account.Name, account.Type, account.CurrentBalance, account.CreatedAt);
+        return new GetByIdAccountResponse(
+        account.Id,
+        account.Name,
+        account.Type,
+        account.CurrentBalance,
+        account.CreatedAt
+        );
     }
 }

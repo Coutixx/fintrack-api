@@ -47,17 +47,6 @@ public class CreateAccountHandler(IAccountRepository accountRepository, IUserCon
             CreatedAt = DateTime.UtcNow
         };
 
-        // Teste rápido dentro do seu CreateAccountHandler:
-        var validator = new CreateAccountValidator(); // substitua pelo nome do seu validador
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-        {
-            // Se entrar aqui, o validador funciona, mas o MediatR não estava chamando ele sozinho!
-            throw new Exception(validationResult.Errors.First().ErrorMessage);
-        }
-
-
         await accountRepository.AddAsync(account);
         return new CreateAccountResponse(account.Id);
     }

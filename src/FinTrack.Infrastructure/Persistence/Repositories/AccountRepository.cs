@@ -17,4 +17,7 @@ public class AccountRepository(AppDbContext context) : IAccountRepository
 
     public Task<List<Account>> GetAllAsync(Guid userId, CancellationToken cancellationToken) =>
         context.Accounts.AsNoTracking().Where(a => a.UserId == userId).ToListAsync(cancellationToken);
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
+        await context.SaveChangesAsync(cancellationToken);
 }

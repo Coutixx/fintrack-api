@@ -9,7 +9,7 @@ namespace FinTrack.Api.Controllers;
 public class AccountsController(ISender sender) : ControllerBase
 {
 
-    [HttpPost]
+    [HttpPost(Name = "CreateAccount")]
     [ProducesResponseType(typeof(CreateAccountResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -41,4 +41,16 @@ public class AccountsController(ISender sender) : ControllerBase
         var response = await sender.Send(query, cancellationToken);
         return Ok(response);
     }
+
+    [HttpPut("{id}", Name = "UpdateAccount")]
+    [ProducesResponseType(typeof(UpdateAccountResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAccountCommand request, CancellationToken cancellationToken)
+    {
+        var response = await sender.Send(new UpdateAccountCommand(id, request.Name, request.Type), cancellationToken);
+
+        return Ok(response);
+    }
+
 }

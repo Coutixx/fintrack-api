@@ -15,7 +15,6 @@ public record UpdateAccountResponse(
     string Name,
     string Type,
     decimal CurrentBalance,
-    DateTime CreatedAt,
     DateTime? UpdatedAt
 );
 
@@ -35,8 +34,8 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
 {
     public async Task<UpdateAccountResponse> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
     {
-        var account = await accountRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken);
-        if (account is null) throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
+        var account = await accountRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
 
         account.Name = request.Name;
         account.Type = request.Type;
@@ -49,7 +48,6 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
         account.Name,
         account.Type,
         account.CurrentBalance,
-        account.CreatedAt,
         account.UpdatedAt
         );
     }

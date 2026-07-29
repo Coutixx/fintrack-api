@@ -26,8 +26,8 @@ public class GetByIdAccountHandler(IAccountRepository accountsRepository, IUserC
 {
     public async Task<GetByIdAccountResponse> Handle(GetByIdAccountQuery request, CancellationToken cancellationToken)
     {
-        var account = await accountsRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken);
-        if (account is null) throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
+        var account = await accountsRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
 
         return new GetByIdAccountResponse(
         account.Id,

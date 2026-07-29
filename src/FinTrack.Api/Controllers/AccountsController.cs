@@ -45,12 +45,25 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpPut("{id}", Name = "UpdateAccount")]
     [ProducesResponseType(typeof(UpdateAccountResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAccountCommand request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(new UpdateAccountCommand(id, request.Name, request.Type), cancellationToken);
 
         return Ok(response);
+    }
+
+    [HttpDelete("{id}", Name = "DeleteAccount")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new DeleteAccountCommand(id), cancellationToken);
+
+        return NoContent();
     }
 
 }

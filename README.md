@@ -293,8 +293,8 @@ Implementar o gerenciamento de contas financeiras.
 
 - [x] Criar Account
 - [x] FluentValidation
-- [ ] CRUD completo
-- [ ] Isolamento por usuário
+- [x] CRUD completo
+- [x] Isolamento por usuário
 - [ ] Testes unitários
 
 ### Critérios de conclusão

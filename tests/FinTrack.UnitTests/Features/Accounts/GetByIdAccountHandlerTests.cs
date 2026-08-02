@@ -21,7 +21,7 @@ public class GetByIdAccountHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var account = new Account { Id = id, UserId = userId };
+        var account = new Account { Id = id, UserId = userId, Name = "Nome" };
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).Returns(account);
 

@@ -8,11 +8,11 @@ public record GetAllAccountsQuery() : IRequest<GetAllAccountsResponse>;
 
 public record GetAllAccountsResponse(List<Account> accounts);
 
-public class GetAllAccountsHandler(IAccountRepository accountsRepository, IUserContext userContext) : IRequestHandler<GetAllAccountsQuery, GetAllAccountsResponse>
+public class GetAllAccountsHandler(IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<GetAllAccountsQuery, GetAllAccountsResponse>
 {
     public async Task<GetAllAccountsResponse> Handle(GetAllAccountsQuery request, CancellationToken cancellationToken)
     {
-        var accounts = await accountsRepository.GetAllAsync(userContext.UserId, cancellationToken);
+        var accounts = await accountRepository.GetAllAsync(userContext.UserId, cancellationToken);
 
         return new GetAllAccountsResponse(accounts);
     }

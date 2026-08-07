@@ -22,11 +22,11 @@ public class GetByIdAccountValidator : AbstractValidator<GetByIdAccountQuery>
             .NotEmpty().WithMessage("O ID é obrigatório.");
     }
 }
-public class GetByIdAccountHandler(IAccountRepository accountsRepository, IUserContext userContext) : IRequestHandler<GetByIdAccountQuery, GetByIdAccountResponse>
+public class GetByIdAccountHandler(IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<GetByIdAccountQuery, GetByIdAccountResponse>
 {
     public async Task<GetByIdAccountResponse> Handle(GetByIdAccountQuery request, CancellationToken cancellationToken)
     {
-        var account = await accountsRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
+        var account = await accountRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
 
         return new GetByIdAccountResponse(

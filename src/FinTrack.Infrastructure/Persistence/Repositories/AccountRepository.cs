@@ -12,6 +12,7 @@ public class AccountRepository(AppDbContext context) : IAccountRepository
         context.Accounts.Add(account);
         await context.SaveChangesAsync();
     }
+
     public Task<Account?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
 

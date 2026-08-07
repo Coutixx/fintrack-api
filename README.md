@@ -295,7 +295,7 @@ Implementar o gerenciamento de contas financeiras.
 - [x] FluentValidation
 - [x] CRUD completo
 - [x] Isolamento por usuário
-- [ ] Testes unitários
+- [x] Testes unitários
 
 ### Critérios de conclusão
 

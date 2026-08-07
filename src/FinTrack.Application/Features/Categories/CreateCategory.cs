@@ -19,15 +19,15 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("O nome da categoria é obrigatório.")
-            .MaximumLength(100).WithMessage("O nome da conta pode ter no máximo 100 caracteres.");
+            .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
 
         RuleFor(x => x.Type)
             .NotEmpty().WithMessage("O tipo da categoria é obrigatório.")
-            .MaximumLength(50).WithMessage("O tipo da conta pode ter no máximo 50 caracteres.");
+            .MaximumLength(50).WithMessage("O tipo da categoria pode ter no máximo 50 caracteres.");
 
         RuleFor(x => x.Color)
             .NotNull().WithMessage("A cor da categoria é obrigatória")
-            .MaximumLength(50).WithMessage("O tipo da categoria pode ter no máximo 50 caracteres.");
+            .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
     }
 }
 

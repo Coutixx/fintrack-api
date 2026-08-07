@@ -27,7 +27,7 @@ public class GetByIdCategoryHandler(ICategoryRepository categoryRepository, IUse
     public async Task<GetByIdCategoryResponse> Handle(GetByIdCategoryQuery request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
+            ?? throw new KeyNotFoundException($"Categoria com ID {request.Id} não encontrada");
 
         return new GetByIdCategoryResponse(
         category.Id,

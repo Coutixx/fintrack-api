@@ -30,4 +30,14 @@ public class CategoriesController(ISender sender) : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet(Name = "GetAllCategories")]
+    [ProducesResponseType(typeof(GetAllCategoriesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll([FromQuery] GetAllCategoriesQuery request, CancellationToken cancellationToken)
+    {
+        var response = await sender.Send(request, cancellationToken);
+        return Ok(response);
+    }
+
 }

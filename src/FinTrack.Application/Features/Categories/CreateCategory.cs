@@ -31,7 +31,7 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
     }
 }
 
-public class CreateAccountHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<CreateCategoryCommand, CreateCategoryResponse>
+public class CreateCategoryHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<CreateCategoryCommand, CreateCategoryResponse>
 {
 
     public async Task<CreateCategoryResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)

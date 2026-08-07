@@ -40,4 +40,16 @@ public class CategoriesController(ISender sender) : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut("{id}", Name = "UpdateCategory")]
+    [ProducesResponseType(typeof(UpdateCategoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryCommand request, CancellationToken cancellationToken)
+    {
+        var response = await sender.Send(new UpdateCategoryCommand(id, request.Name, request.Type), cancellationToken);
+
+        return Ok(response);
+    }
+
 }

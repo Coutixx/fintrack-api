@@ -12,4 +12,6 @@ public interface ICategoryRepository
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 
+    Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken);
+
 }

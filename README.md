@@ -315,8 +315,8 @@ Gerenciar categorias financeiras.
 
 ### Entregas
 
-- [ ] Criar Category
-- [ ] CRUD
+- [x] Criar Category
+- [x] CRUD
 - [ ] Impedir nomes duplicados
 - [ ] Paginação
 - [ ] Filtros básicos

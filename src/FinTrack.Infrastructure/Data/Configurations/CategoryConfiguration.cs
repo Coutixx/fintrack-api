@@ -1,4 +1,5 @@
 using FinTrack.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FinTrack.Infrastructure.Data.Configurations;
@@ -17,6 +18,8 @@ public class CategoryConfiguration
         builder.Property(a => a.Name).IsRequired().HasMaxLength(100);
         builder.Property(a => a.Type).IsRequired().HasMaxLength(50);
         builder.Property(a => a.Color).IsRequired().HasMaxLength(50);
+
+        builder.HasIndex(c => new { c.UserId, c.Name, c.DeletedAt }).HasFilter("DeletedAt IS NULL").IsUnique();
 
         // Relacionamento 1:N
         builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId).IsRequired(false);

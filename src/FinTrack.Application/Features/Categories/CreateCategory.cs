@@ -15,11 +15,17 @@ public record CreateCategoryResponse(Guid Id);
 
 public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 {
-    public CreateCategoryValidator()
+    public CreateCategoryValidator(ICategoryRepository categoryRepository, IUserContext userContext)
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("O nome da categoria é obrigatório.")
-            .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
+            .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.")
+            .MustAsync(async (name, cancellation) =>
+            {
+                var userId = userContext.UserId;
+                return !await categoryRepository.ExistingByNameAsync(userId, name, cancellation);
+            })
+            .WithMessage("Já existe uma categoria com esse nome.");
 
         RuleFor(x => x.Type)
             .NotEmpty().WithMessage("O tipo da categoria é obrigatório.")

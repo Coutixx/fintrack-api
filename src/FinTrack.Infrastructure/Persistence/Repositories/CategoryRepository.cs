@@ -22,4 +22,8 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
         await context.SaveChangesAsync(cancellationToken);
 
+    public async Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken) =>
+        await context.Categories.
+            AnyAsync(c => c.UserId == userId && c.Name == name && c.DeletedAt == null, cancellationToken);
+
 }

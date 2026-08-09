@@ -317,8 +317,8 @@ Gerenciar categorias financeiras.
 
 - [x] Criar Category
 - [x] CRUD
-- [ ] Impedir nomes duplicados
-- [ ] Paginação
+- [x] Impedir nomes duplicados
+- [x] Paginação
 - [ ] Filtros básicos
 - [ ] Testes unitários
 

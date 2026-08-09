@@ -17,13 +17,12 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
         context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
 
     public Task<List<Category>> GetAllAsync(Guid userId, CancellationToken cancellationToken) =>
-        context.Categories.AsNoTracking().Where(a => a.UserId == userId).ToListAsync(cancellationToken);
+        context.Categories.AsNoTracking().Where(a => a.UserId == userId && a.DeletedAt == null).Take(100).ToListAsync(cancellationToken);
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
         await context.SaveChangesAsync(cancellationToken);
 
     public async Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken) =>
         await context.Categories.
-            AnyAsync(c => c.UserId == userId && c.Name == name && c.DeletedAt == null, cancellationToken);
-
+            AsNoTracking().AnyAsync(c => c.UserId == userId && c.Name == name && c.DeletedAt == null, cancellationToken);
 }

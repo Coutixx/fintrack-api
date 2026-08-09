@@ -22,7 +22,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterCommand request, CancellationToken cancellationToken)
     {
         var response = await _sender.Send(request, cancellationToken);
-
         return Created($"Register/{response.Id}", response);
     }
 
@@ -34,7 +33,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginCommand request, CancellationToken cancellationToken)
     {
         var response = await _sender.Send(request, cancellationToken);
-
         return Ok(response);
     }
 }

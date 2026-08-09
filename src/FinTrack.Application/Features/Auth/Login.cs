@@ -6,8 +6,8 @@ using MediatR;
 namespace FinTrack.Application.Features.Auth;
 
 public record LoginCommand(
-    string Password,
-    string Email
+    string Email,
+    string Password
 ) : IRequest<LoginResponse>;
 
 public record LoginResponse(

@@ -16,8 +16,14 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
 
-    public Task<List<Category>> GetAllAsync(Guid userId, CancellationToken cancellationToken) =>
-        context.Categories.AsNoTracking().Where(a => a.UserId == userId && a.DeletedAt == null).Take(100).ToListAsync(cancellationToken);
+    public Task<List<Category>> GetAllAsync(Guid userId, string? type, CancellationToken cancellationToken)
+    {
+        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId);
+
+        if (!string.IsNullOrWhiteSpace(type)) query = query.Where(c => c.Type == type);
+
+        return query.ToListAsync(cancellationToken);
+    }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
         await context.SaveChangesAsync(cancellationToken);

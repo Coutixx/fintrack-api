@@ -8,7 +8,7 @@ public interface ICategoryRepository
 
     Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 
-    Task<List<Category>> GetAllAsync(Guid userId, CancellationToken cancellationToken);
+    Task<List<Category>> GetAllAsync(Guid userId, string? type, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 

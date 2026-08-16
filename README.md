@@ -319,7 +319,7 @@ Gerenciar categorias financeiras.
 - [x] CRUD
 - [x] Impedir nomes duplicados
 - [x] Paginação
-- [ ] Filtros básicos
+- [x] Filtros básicos
 - [ ] Testes unitários
 
 ### Critérios de conclusão

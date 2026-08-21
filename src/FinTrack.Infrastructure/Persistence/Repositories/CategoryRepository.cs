@@ -18,7 +18,7 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
 
     public Task<List<Category>> GetAllAsync(Guid userId, string? type, CancellationToken cancellationToken)
     {
-        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId);
+        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId).Take(10);
 
         if (!string.IsNullOrWhiteSpace(type)) query = query.Where(c => c.Type == type);
 
@@ -30,5 +30,5 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
 
     public async Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken) =>
         await context.Categories.
-            AsNoTracking().AnyAsync(c => c.UserId == userId && c.Name == name && c.DeletedAt == null, cancellationToken);
+            AsNoTracking().AnyAsync(c => c.UserId == userId && c.Name == name, cancellationToken);
 }

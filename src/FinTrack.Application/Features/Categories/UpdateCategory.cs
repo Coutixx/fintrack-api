@@ -40,6 +40,7 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUser
 
         category.Name = request.Name;
         category.Type = request.Type;
+        category.Color = request.Color;
         category.UpdatedAt = DateTime.UtcNow;
 
         await categoryRepository.SaveChangesAsync(cancellationToken);

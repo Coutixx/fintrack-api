@@ -39,12 +39,8 @@ public class GetByIdAccountHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-
         _userContext.UserId.Returns(userId);
-
-        _accountRepository.
-            GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).
-            ReturnsNull();
+        _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).ReturnsNull();
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>

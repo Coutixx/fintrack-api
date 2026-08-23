@@ -320,7 +320,7 @@ Gerenciar categorias financeiras.
 - [x] Impedir nomes duplicados
 - [x] Paginação
 - [x] Filtros básicos
-- [ ] Testes unitários
+- [x] Testes unitários
 
 ### Critérios de conclusão
 

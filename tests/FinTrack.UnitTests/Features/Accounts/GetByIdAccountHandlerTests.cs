@@ -21,7 +21,15 @@ public class GetByIdAccountHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var account = new Account { Id = id, UserId = userId, Name = "Nome" };
+        var account = new Account
+        {
+            Id = id,
+            UserId = userId,
+            Name = "Nome",
+            Type = "Tipo",
+            CurrentBalance = 123.45m,
+            CreatedAt = DateTime.UtcNow.AddDays(-1)
+        };
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).Returns(account);
 
@@ -31,6 +39,9 @@ public class GetByIdAccountHandlerTests
         // Assert
         Assert.Equal(id, response.Id);
         Assert.Equal("Nome", response.Name);
+        Assert.Equal("Tipo", response.Type);
+        Assert.Equal(123.45m, response.CurrentBalance);
+        Assert.Equal(account.CreatedAt, response.CreatedAt);
     }
 
     [Fact]

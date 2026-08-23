@@ -36,6 +36,8 @@ public class UpdateAccountHandlerTests
         // Assert
         Assert.Equal("Nome Novo", response.Name);
         Assert.Equal("Tipo Novo", response.Type);
+        Assert.Equal(id, response.Id);
+        Assert.NotNull(response.UpdatedAt);
         await _accountRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -51,5 +53,6 @@ public class UpdateAccountHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
         _handler.Handle(new UpdateAccountCommand(id, "Nome novo", "Tipo Novo"), CancellationToken.None));
+        await _accountRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

@@ -23,7 +23,15 @@ public class GetByIdCategoryHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var category = new Category { Id = id, UserId = userId, Name = "Nome" };
+        var category = new Category
+        {
+            Id = id,
+            UserId = userId,
+            Name = "Nome",
+            Type = "Tipo",
+            Color = "Blue",
+            CreatedAt = DateTime.UtcNow.AddDays(-1)
+        };
         _userContext.UserId.Returns(userId);
         _categoryRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).Returns(category);
 
@@ -33,6 +41,9 @@ public class GetByIdCategoryHandlerTests
         // Assert
         Assert.Equal(id, response.Id);
         Assert.Equal("Nome", response.Name);
+        Assert.Equal("Tipo", response.Type);
+        Assert.Equal("Blue", response.Color);
+        Assert.Equal(category.CreatedAt, response.CreatedAt);
     }
 
     [Fact]
@@ -41,6 +52,7 @@ public class GetByIdCategoryHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
+        _userContext.UserId.Returns(userId);
         _categoryRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).ReturnsNull();
 
         // Act & Assert

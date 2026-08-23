@@ -44,6 +44,7 @@ public class DeleteAccountHandlerTests
         Assert.InRange(existingAccount.DeletedAt.Value,
             DateTime.UtcNow.AddSeconds(-2),
             DateTime.UtcNow.AddSeconds(2));
+        await _accountRepository.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -62,5 +63,6 @@ public class DeleteAccountHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _handler.Handle(new DeleteAccountCommand(id), CancellationToken.None));
+        await _accountRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

@@ -2,7 +2,6 @@ using System.Security.Authentication;
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Auth;
 using FinTrack.Domain.Entities;
-
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Auth.Login;
@@ -38,14 +37,19 @@ public class LoginHandlerTests
     {
         // Arrange
         var request = new LoginCommand("email@email.com", "password123");
-        var user = new User { Email = "email@email.com" };
+        var user = new User
+        {
+            Email = "email@email.com",
+            Name = "Coutinho",
+            PasswordHash = "fake-hash"
+        };
 
         _userRepository
             .GetByEmailAsync(request.Email, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<User?>(user));
 
         _passwordHasher
-            .Verify(request.Password, Arg.Any<string>())
+            .Verify(request.Password, user.PasswordHash)
             .Returns(true);
 
         _tokenService
@@ -58,6 +62,10 @@ public class LoginHandlerTests
         // Assert
         Assert.NotNull(response);
         Assert.Equal("fake-token", response.Token);
+        Assert.Equal(user.Email, response.Email);
+        Assert.Equal(user.Name, response.Name);
+        _passwordHasher.Received(1).Verify(request.Password, user.PasswordHash);
+        _tokenService.Received(1).GenerateToken(user);
     }
 
     [Fact]
@@ -78,5 +86,7 @@ public class LoginHandlerTests
         // Assert
         await Assert.ThrowsAsync<InvalidCredentialException>(() =>
             _handler.Handle(request, CancellationToken.None));
+
+        _tokenService.DidNotReceive().GenerateToken(Arg.Any<User>());
     }
 }

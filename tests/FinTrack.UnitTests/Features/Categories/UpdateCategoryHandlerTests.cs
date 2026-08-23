@@ -20,7 +20,7 @@ public class UpdateCategoryHandlerTests
     [Fact]
     public async Task Handle_ValidRequest_UpdatesCategory()
     {
-        // Assert
+        // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
         var existingCategory = new Category
@@ -46,6 +46,8 @@ public class UpdateCategoryHandlerTests
         Assert.Equal("Nome Novo", response.Name);
         Assert.Equal("Tipo Novo", response.Type);
         Assert.Equal("Cor Nova", response.Color);
+        Assert.Equal(id, response.Id);
+        Assert.NotNull(response.UpdatedAt);
         await _categoryRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -71,7 +73,7 @@ public class UpdateCategoryHandlerTests
     [Fact]
     public async Task Handle_ValidRequest_SetsUpdatedAt()
     {
-        // Assert
+        // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
         var existingCategory = new Category

@@ -29,16 +29,28 @@ public class RegisterHandlerTests
             .AddAsync(Arg.Any<User>())
             .Returns(Task.CompletedTask);
 
+        _passwordHasher
+            .Hash(request.Password)
+            .Returns("fake-hash");
+
+        _tokenService
+            .GenerateToken(Arg.Any<User>())
+            .Returns("fake-token");
+
         // Act
         var response = await _handler.Handle(request, CancellationToken.None);
         Assert.NotNull(response);
         Assert.NotEqual(Guid.Empty, response.Id);
+        Assert.Equal("fake-token", response.Token);
 
         // Assert
         await _userRepository.Received(1).AddAsync(Arg.Is<User>(u =>
             u.Name == request.Name &&
-            u.Email == request.Email
+            u.Email == request.Email &&
+            u.PasswordHash != string.Empty &&
+            u.CreatedAt <= DateTime.UtcNow
         ));
+        _tokenService.Received(1).GenerateToken(Arg.Any<User>());
     }
 
     [Fact]
@@ -52,7 +64,7 @@ public class RegisterHandlerTests
             .Returns(Task.FromResult(false));
 
         _passwordHasher
-                    .Hash(request.Password).Returns("fake-hash");
+            .Hash(request.Password).Returns("fake-hash");
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -64,5 +76,21 @@ public class RegisterHandlerTests
             u.Name == request.Name &&
             u.Email == request.Email &&
             u.PasswordHash == "fake-hash"));
+    }
+
+    [Fact]
+    public async Task Handle_EmailAlreadyExists_ThrowsInvalidCredentialException()
+    {
+        // Arrange
+        var request = new RegisterCommand("Coutinho", "email@email.com", "password123");
+        _userRepository.ExistingByEmailAsync(request.Email, Arg.Any<CancellationToken>()).Returns(true);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<System.Security.Authentication.InvalidCredentialException>(() =>
+            _handler.Handle(request, CancellationToken.None));
+
+        _passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+        await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
+        _tokenService.DidNotReceive().GenerateToken(Arg.Any<User>());
     }
 }

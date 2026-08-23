@@ -46,10 +46,11 @@ public class DeleteCategoryHandlerTests
         Assert.InRange(existingCategory.DeletedAt.Value,
             DateTime.UtcNow.AddSeconds(-2),
             DateTime.UtcNow.AddSeconds(2));
+        await _categoryRepository.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
-    public async Task Handle_NonExistingAccount_ThrowsNotFound()
+    public async Task Handle_NonExistingCategory_ThrowsNotFound()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -64,5 +65,6 @@ public class DeleteCategoryHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _handler.Handle(new DeleteCategoryCommand(id), CancellationToken.None));
+        await _categoryRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

@@ -1,47 +1,49 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Accounts;
+using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
+namespace FinTrack.UnitTests.Features.Categories;
 
-namespace FinTrack.UnitTests.Features.Accounts;
-
-public class DeleteAccountHandlerTests
+public class DeleteCategoryHandlerTests
 {
-    private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
-    private readonly DeleteAccountHandler _handler;
-    public DeleteAccountHandlerTests() =>
-        _handler = new DeleteAccountHandler(_accountRepository, _userContext);
+
+    private readonly DeleteCategoryHandler _handler;
+
+    public DeleteCategoryHandlerTests() =>
+        _handler = new DeleteCategoryHandler(_categoryRepository, _userContext);
 
     [Fact]
-    public async Task Handle_ValidRequest_DeletesAccount()
+    public async Task Handle_ValidRequest_DeletesCategory()
     {
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
 
-        var existingAccount = new Account
+        var existingCategory = new Category
         {
             Id = id,
             UserId = userId,
             Name = "Nome",
-            Type = "Tipo"
+            Type = "Tipo",
         };
 
-        _accountRepository
+        _categoryRepository
             .GetByIdAsync(id, userId, Arg.Any<CancellationToken>())
-            .Returns(existingAccount);
+            .Returns(existingCategory);
 
         _userContext.UserId.Returns(userId);
 
         // Act
-        await _handler.Handle(new DeleteAccountCommand(id), CancellationToken.None);
+        await _handler.Handle(new DeleteCategoryCommand(id), CancellationToken.None);
 
         // Assert
-        Assert.NotNull(existingAccount.DeletedAt);
-        Assert.InRange(existingAccount.DeletedAt.Value,
+        Assert.NotNull(existingCategory.DeletedAt);
+        Assert.InRange(existingCategory.DeletedAt.Value,
             DateTime.UtcNow.AddSeconds(-2),
             DateTime.UtcNow.AddSeconds(2));
     }
@@ -55,12 +57,12 @@ public class DeleteAccountHandlerTests
 
         _userContext.UserId.Returns(userId);
 
-        _accountRepository.
+        _categoryRepository.
             GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).
             ReturnsNull();
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            _handler.Handle(new DeleteAccountCommand(id), CancellationToken.None));
+            _handler.Handle(new DeleteCategoryCommand(id), CancellationToken.None));
     }
 }

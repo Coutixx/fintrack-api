@@ -20,23 +20,22 @@ public class UpdateAccountHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var existingAccount = new Account { Id = id, UserId = userId, Name = "Nome Antigo", Type = "Tipo Antigo" };
-
+        var existingAccount = new Account
+        {
+            Id = id,
+            UserId = userId,
+            Name = "Nome Antigo",
+            Type = "Tipo Antigo"
+        };
         _userContext.UserId.Returns(userId);
-
-        _accountRepository
-            .GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).
-            Returns(existingAccount);
-
-        var request = new UpdateAccountCommand(id, "Nome Novo", "Tipo Novo");
+        _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).Returns(existingAccount);
 
         // Act
-        var response = await _handler.Handle(request, CancellationToken.None);
+        var response = await _handler.Handle(new UpdateAccountCommand(id, "Nome Novo", "Tipo Novo"), CancellationToken.None);
 
         // Assert
         Assert.Equal("Nome Novo", response.Name);
         Assert.Equal("Tipo Novo", response.Type);
-
         await _accountRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -46,16 +45,11 @@ public class UpdateAccountHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-
         _userContext.UserId.Returns(userId);
-        _accountRepository
-            .GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).
-            ReturnsNull();
-
-        var request = new UpdateAccountCommand(id, "Nome novo", "Tipo Novo");
+        _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).ReturnsNull();
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-        _handler.Handle(request, CancellationToken.None));
+        _handler.Handle(new UpdateAccountCommand(id, "Nome novo", "Tipo Novo"), CancellationToken.None));
     }
 }

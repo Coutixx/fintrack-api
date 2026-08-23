@@ -18,11 +18,11 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
 
     public Task<List<Category>> GetAllAsync(Guid userId, string? type, CancellationToken cancellationToken)
     {
-        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId).Take(10);
+        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId);
 
         if (!string.IsNullOrWhiteSpace(type)) query = query.Where(c => c.Type == type);
 
-        return query.ToListAsync(cancellationToken);
+        return query.Take(10).ToListAsync(cancellationToken);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>

@@ -1,4 +1,5 @@
 using FinTrack.Domain.Common;
+using FinTrack.Domain.Enums;
 
 namespace FinTrack.Domain.Entities;
 
@@ -6,9 +7,9 @@ public class Transaction : BaseEntity
 {
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public string Type { get; set; } = string.Empty;
+    public TransactionType Type { get; set; }
     public DateTime Date { get; set; } = DateTime.UtcNow;
-    public string Status { get; set; } = string.Empty;
+    public TransactionStatus Status { get; set; }
     public Guid AccountId { get; set; }
     public Account Account { get; set; } = null!;
     public Guid CategoryId { get; set; }

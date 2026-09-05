@@ -16,7 +16,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(a => a.DeletedAt).IsRequired(false);
 
         builder.Property(a => a.Name).IsRequired().HasMaxLength(100);
-        builder.Property(a => a.Type).IsRequired().HasMaxLength(50);
+        builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(a => a.Color).IsRequired().HasMaxLength(50);
 
         builder.HasIndex(a => new { a.UserId, a.Name }).HasFilter("\"DeletedAt\" IS NULL").IsUnique();

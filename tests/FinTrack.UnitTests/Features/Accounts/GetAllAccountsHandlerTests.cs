@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Accounts;
@@ -19,7 +20,7 @@ public class GetAllAccountsHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var account = new Account { Name = "Conta", Type = "Tipo", UserId = id };
+        var account = new Account { Name = "Conta", Type = AccountType.Checking, UserId = id };
         var accounts = new List<Account> { account };
 
         _userContext.UserId.Returns(id);

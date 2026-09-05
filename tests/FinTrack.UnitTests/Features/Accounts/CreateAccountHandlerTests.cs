@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Accounts;
@@ -18,7 +19,7 @@ public class CreateAccountHandlerTests
     public async Task Handle_WhenCommandIsValid_ReturnsAccountId()
     {
         // Arrange
-        var request = new CreateAccountCommand("Henrique", "Conta", 1983.93m);
+        var request = new CreateAccountCommand("Henrique", AccountType.Checking, 1983.93m);
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
         _accountRepository.AddAsync(Arg.Any<Account>()).Returns(Task.CompletedTask);
@@ -43,7 +44,7 @@ public class CreateAccountHandlerTests
     public async Task Handle_WhenInitialBalanceIsNull_SetsBalanceToZero()
     {
         // Arrange
-        var request = new CreateAccountCommand("Henrique", "Conta", null);
+        var request = new CreateAccountCommand("Henrique", AccountType.Checking, null);
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
 
@@ -58,7 +59,7 @@ public class CreateAccountHandlerTests
     public async Task Handle_WhenCalled_UsesUserIdFromUserContext()
     {
         // Arrange
-        var request = new CreateAccountCommand("Henrique", "Conta", null);
+        var request = new CreateAccountCommand("Henrique", AccountType.Checking, null);
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
 
@@ -73,7 +74,7 @@ public class CreateAccountHandlerTests
     public async Task Handle_WhenCommmandIsValid_SetsInitalAndCurrentBalanceEqually()
     {
         // Arrange
-        var request = new CreateAccountCommand("Henrique", "Conta", 350.49m);
+        var request = new CreateAccountCommand("Henrique", AccountType.Checking, 350.49m);
 
         // Act
         await _handler.Handle(request, CancellationToken.None);

@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -27,7 +28,7 @@ public class DeleteAccountHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome",
-            Type = "Tipo"
+            Type = AccountType.Checking
         };
 
         _accountRepository

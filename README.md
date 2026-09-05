@@ -339,7 +339,7 @@ Implementar o núcleo financeiro do sistema.
 
 ### Entregas
 
-- [ ] Criar Transaction
+- [x] Criar Transaction
 - [ ] CRUD
 - [ ] Atualização automática do saldo
 - [ ] Estorno ao excluir
@@ -398,24 +398,6 @@ Preparar o projeto para publicação.
 - Código revisado.
 - Testes passando.
 - API pronta para publicação.
-
----
-
-# 📊 Status
-
-**Sprint Atual**
-
-> 🚩 Sprint 0 — Planejamento
-
-## Progresso
-
-- [x] Sprint 0
-- [ ] Sprint 1
-- [ ] Sprint 2
-- [ ] Sprint 3
-- [ ] Sprint 4
-- [ ] Sprint 5
-- [ ] Sprint 6
 
 ---
 

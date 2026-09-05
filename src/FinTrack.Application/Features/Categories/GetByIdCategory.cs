@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -9,7 +10,7 @@ public record GetByIdCategoryQuery(Guid Id) : IRequest<GetByIdCategoryResponse>;
 public record GetByIdCategoryResponse(
     Guid Id,
     string Name,
-    string Type,
+    TransactionType Type,
     string Color,
     DateTime CreatedAt
     );

@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -28,7 +29,7 @@ public class UpdateCategoryHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome Antigo",
-            Type = "Tipo Antigo",
+            Type = TransactionType.Income,
             Color = "Cor Antiga"
         };
         _userContext.UserId.Returns(userId);
@@ -38,13 +39,13 @@ public class UpdateCategoryHandlerTests
         var response = await _handler.Handle(new UpdateCategoryCommand(
             id,
             "Nome Novo",
-            "Tipo Novo",
+            TransactionType.Income,
             "Cor Nova"
             ), CancellationToken.None);
 
         // Assert
         Assert.Equal("Nome Novo", response.Name);
-        Assert.Equal("Tipo Novo", response.Type);
+        Assert.Equal(TransactionType.Income, response.Type);
         Assert.Equal("Cor Nova", response.Color);
         Assert.Equal(id, response.Id);
         Assert.NotNull(response.UpdatedAt);
@@ -65,7 +66,7 @@ public class UpdateCategoryHandlerTests
             _handler.Handle(new UpdateCategoryCommand(
             id,
             "Nome Novo",
-            "Tipo Novo",
+            TransactionType.Income,
             "Cor Nova"
             ), CancellationToken.None));
     }
@@ -81,7 +82,7 @@ public class UpdateCategoryHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome Antigo",
-            Type = "Tipo Antigo",
+            Type = TransactionType.Income,
             Color = "Cor Antiga"
         };
         _userContext.UserId.Returns(userId);
@@ -91,7 +92,7 @@ public class UpdateCategoryHandlerTests
         await _handler.Handle(new UpdateCategoryCommand(
             id,
             "Nome Novo",
-            "Tipo Novo",
+            TransactionType.Income,
             "Cor Nova"
             ), CancellationToken.None);
 

@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -25,17 +26,17 @@ public class UpdateAccountHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome Antigo",
-            Type = "Tipo Antigo"
+            Type = AccountType.Checking
         };
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(id, userId, Arg.Any<CancellationToken>()).Returns(existingAccount);
 
         // Act
-        var response = await _handler.Handle(new UpdateAccountCommand(id, "Nome Novo", "Tipo Novo"), CancellationToken.None);
+        var response = await _handler.Handle(new UpdateAccountCommand(id, "Nome Novo", AccountType.Checking), CancellationToken.None);
 
         // Assert
         Assert.Equal("Nome Novo", response.Name);
-        Assert.Equal("Tipo Novo", response.Type);
+        Assert.Equal(AccountType.Checking, response.Type);
         Assert.Equal(id, response.Id);
         Assert.NotNull(response.UpdatedAt);
         await _accountRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -52,7 +53,7 @@ public class UpdateAccountHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-        _handler.Handle(new UpdateAccountCommand(id, "Nome novo", "Tipo Novo"), CancellationToken.None));
+        _handler.Handle(new UpdateAccountCommand(id, "Nome novo", AccountType.Checking), CancellationToken.None));
         await _accountRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

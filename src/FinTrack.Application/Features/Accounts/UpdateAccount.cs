@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -7,13 +8,13 @@ namespace FinTrack.Application.Features.Accounts;
 public record UpdateAccountCommand(
     Guid Id,
     string Name,
-    string Type
+    AccountType Type
 ) : IRequest<UpdateAccountResponse>;
 
 public record UpdateAccountResponse(
     Guid Id,
     string Name,
-    string Type,
+    AccountType Type,
     decimal CurrentBalance,
     DateTime? UpdatedAt
 );
@@ -24,9 +25,9 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
     {
         RuleFor(x => x.Name)
             .MaximumLength(100).WithMessage("O nome da conta pode ter no máximo 100 caracteres.");
-
         RuleFor(x => x.Type)
-                .MaximumLength(50).WithMessage("O tipo da conta pode ter no máximo 50 caracteres.");
+            .IsInEnum().WithMessage("O tipo de transação é inválido.");
+
     }
 }
 

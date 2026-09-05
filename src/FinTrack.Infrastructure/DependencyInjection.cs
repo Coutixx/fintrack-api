@@ -50,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         return services;
     }

@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -28,7 +29,7 @@ public class GetByIdCategoryHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome",
-            Type = "Tipo",
+            Type = TransactionType.Income,
             Color = "Blue",
             CreatedAt = DateTime.UtcNow.AddDays(-1)
         };
@@ -41,7 +42,7 @@ public class GetByIdCategoryHandlerTests
         // Assert
         Assert.Equal(id, response.Id);
         Assert.Equal("Nome", response.Name);
-        Assert.Equal("Tipo", response.Type);
+        Assert.Equal(TransactionType.Income, response.Type);
         Assert.Equal("Blue", response.Color);
         Assert.Equal(category.CreatedAt, response.CreatedAt);
     }

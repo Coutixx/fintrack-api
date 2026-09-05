@@ -20,7 +20,7 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.CurrentBalance).HasPrecision(18, 2);
 
         builder.Property(a => a.Name).IsRequired().HasMaxLength(100);
-        builder.Property(a => a.Type).IsRequired().HasMaxLength(50);
+        builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         // Relacionamento 1:N
         builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId).IsRequired();

@@ -1,5 +1,6 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -7,7 +8,7 @@ namespace FinTrack.Application.Features.Categories;
 
 public record CreateCategoryCommand(
     string Name,
-    string Type,
+    TransactionType Type,
     string Color
 ) : IRequest<CreateCategoryResponse>;
 
@@ -26,14 +27,11 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
                 return !await categoryRepository.ExistingByNameAsync(userId, name, cancellation);
             })
             .WithMessage("Já existe uma categoria com esse nome.");
-
-        RuleFor(x => x.Type)
-            .NotEmpty().WithMessage("O tipo da categoria é obrigatório.")
-            .MaximumLength(50).WithMessage("O tipo da categoria pode ter no máximo 50 caracteres.");
-
         RuleFor(x => x.Color)
             .NotNull().WithMessage("A cor da categoria é obrigatória")
             .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
+        RuleFor(x => x.Type)
+            .IsInEnum().WithMessage("O tipo de transação é inválido.");
     }
 }
 

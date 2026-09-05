@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -7,14 +8,14 @@ namespace FinTrack.Application.Features.Categories;
 public record UpdateCategoryCommand(
     Guid Id,
     string Name,
-    string Type,
+    TransactionType Type,
     string Color
 ) : IRequest<UpdateCategoryResponse>;
 
 public record UpdateCategoryResponse(
     Guid Id,
     string Name,
-    string Type,
+    TransactionType Type,
     string Color,
     DateTime? UpdatedAt
 );
@@ -25,9 +26,8 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
     {
         RuleFor(x => x.Name)
             .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
-
         RuleFor(x => x.Type)
-            .MaximumLength(50).WithMessage("O tipo da categoria pode ter no máximo 50 caracteres.");
+            .IsInEnum().WithMessage("O tipo de transação enviado é inválido.");
     }
 }
 

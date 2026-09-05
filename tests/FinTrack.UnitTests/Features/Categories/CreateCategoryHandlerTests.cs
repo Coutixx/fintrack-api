@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Categories;
@@ -20,7 +21,7 @@ public class CreateCategoryHandlerTests
     public async Task Handle_WhenCommandIsValid_ReturnsCategoryId()
     {
         // Arrange
-        var request = new CreateCategoryCommand("Henrique", "Categoria", "Blue");
+        var request = new CreateCategoryCommand("Henrique", TransactionType.Income, "Blue");
         _categoryRepository.AddAsync(Arg.Any<Category>()).Returns(Task.CompletedTask);
 
         // Act
@@ -40,7 +41,7 @@ public class CreateCategoryHandlerTests
     public async Task Handle_WhenCalled_UsesUserIdFromUserContext()
     {
         // Arrange
-        var request = new CreateCategoryCommand("Henrique", "Categoria", "Blue");
+        var request = new CreateCategoryCommand("Henrique", TransactionType.Income, "Blue");
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -53,7 +54,7 @@ public class CreateCategoryHandlerTests
     public async Task Handle_WhenCommandIsValid_SetsCreatedAt()
     {
         // Arrange
-        var request = new CreateCategoryCommand("Henrique", "Categoria", "Blue");
+        var request = new CreateCategoryCommand("Henrique", TransactionType.Income, "Blue");
         var beforeExecution = DateTime.UtcNow;
 
         // Act

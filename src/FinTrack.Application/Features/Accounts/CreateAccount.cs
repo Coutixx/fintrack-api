@@ -1,5 +1,6 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -7,7 +8,7 @@ namespace FinTrack.Application.Features.Accounts;
 
 public record CreateAccountCommand(
     string Name,
-    string Type,
+    AccountType Type,
     decimal? InitialBalance
 ) : IRequest<CreateAccountResponse>;
 
@@ -20,14 +21,11 @@ public class CreateAccountValidator : AbstractValidator<CreateAccountCommand>
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("O nome da conta é obrigatório.")
             .MaximumLength(100).WithMessage("O nome da conta pode ter no máximo 100 caracteres.");
-
-        RuleFor(x => x.Type)
-            .NotEmpty().WithMessage("O tipo da conta é obrigatório.")
-            .MaximumLength(50).WithMessage("O tipo da conta pode ter no máximo 50 caracteres.");
-
         RuleFor(x => x.InitialBalance)
             .NotNull().WithMessage("O valor saldo inicial é obrigatório")
             .GreaterThanOrEqualTo(0).WithMessage("O saldo inicial não pode ser negativo.");
+        RuleFor(x => x.Type)
+            .IsInEnum().WithMessage("O tipo de transação é inválido.");
     }
 }
 

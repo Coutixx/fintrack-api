@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
 
@@ -9,7 +10,7 @@ public record GetByIdAccountQuery(Guid Id) : IRequest<GetByIdAccountResponse>;
 public record GetByIdAccountResponse(
     Guid Id,
     string Name,
-    string Type,
+    AccountType Type,
     decimal CurrentBalance,
     DateTime CreatedAt
     );

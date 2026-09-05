@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -26,7 +27,7 @@ public class GetByIdAccountHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome",
-            Type = "Tipo",
+            Type = AccountType.Checking,
             CurrentBalance = 123.45m,
             CreatedAt = DateTime.UtcNow.AddDays(-1)
         };
@@ -39,7 +40,7 @@ public class GetByIdAccountHandlerTests
         // Assert
         Assert.Equal(id, response.Id);
         Assert.Equal("Nome", response.Name);
-        Assert.Equal("Tipo", response.Type);
+        Assert.Equal(AccountType.Checking, response.Type);
         Assert.Equal(123.45m, response.CurrentBalance);
         Assert.Equal(account.CreatedAt, response.CreatedAt);
     }

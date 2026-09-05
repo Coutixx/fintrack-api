@@ -17,9 +17,9 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         builder.Property(t => t.Description).IsRequired().HasMaxLength(100);
         builder.Property(t => t.Amount).IsRequired().HasPrecision(18, 2);
-        builder.Property(t => t.Type).IsRequired().HasMaxLength(50);
+        builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(t => t.Date).IsRequired();
-        builder.Property(t => t.Status).IsRequired().HasMaxLength(50);
+        builder.Property(t => t.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         // Relacionamentos N:1
         builder.HasOne(a => a.Account).WithMany().HasForeignKey(a => a.AccountId).IsRequired();

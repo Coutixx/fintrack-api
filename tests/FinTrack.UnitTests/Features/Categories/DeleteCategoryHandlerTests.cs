@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -29,7 +30,7 @@ public class DeleteCategoryHandlerTests
             Id = id,
             UserId = userId,
             Name = "Nome",
-            Type = "Tipo",
+            Type = TransactionType.Income,
         };
 
         _categoryRepository

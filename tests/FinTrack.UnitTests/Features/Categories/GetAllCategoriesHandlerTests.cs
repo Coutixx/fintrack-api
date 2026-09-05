@@ -1,6 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using NSubstitute;
 
 namespace FinTrack.UnitTests.Features.Categories;
@@ -21,7 +22,7 @@ public class GetAllCategoriesHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var type = "Tipo";
+        var type = TransactionType.Income;
         var category = new Category { Name = "Conta", Type = type, UserId = id };
         var categories = new List<Category> { category };
 
@@ -43,7 +44,7 @@ public class GetAllCategoriesHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var type = "Tipo";
+        var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(new List<Category>());
 
@@ -74,7 +75,7 @@ public class GetAllCategoriesHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var type = "Tipo";
+        var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
 
         // Act

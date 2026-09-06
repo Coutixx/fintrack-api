@@ -28,6 +28,9 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
             .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("O tipo de transação enviado é inválido.");
+        RuleFor(x => x.Color)
+            .NotNull().WithMessage("A cor da categoria é obrigatória")
+            .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
     }
 }
 

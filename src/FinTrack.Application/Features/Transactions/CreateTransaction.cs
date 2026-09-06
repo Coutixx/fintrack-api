@@ -47,10 +47,10 @@ public class CreateTransactionHandler(ITransactionRepository transactionReposito
     public async Task<CreateTransactionResponse> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var account = await accountRepository.GetByIdAsync(request.AccountId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException("Conta não encontrada.");
+            ?? throw new KeyNotFoundException($"Conta com ID: {request.AccountId} não encontrada.");
 
         var category = await categoryRepository.GetByIdAsync(request.CategoryId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException("Categoria não encontrada.");
+            ?? throw new KeyNotFoundException($"Categoria com ID: {request.CategoryId} não encontrada.");
 
         if (category.Type != request.Type) throw new ArgumentException("O tipo da transação não é igual o da categoria.");
 

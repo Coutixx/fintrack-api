@@ -16,7 +16,7 @@ public record TransactionItem(
 );
 
 public record GetAllTransactionsResponse(List<TransactionItem> Transactions);
-public class GetAllTransactions(ITransactionRepository transactionRepository, IUserContext userContext) : IRequestHandler<GetAllTransactionsQuery, GetAllTransactionsResponse>
+public class GetAllTransactionsHandler(ITransactionRepository transactionRepository, IUserContext userContext) : IRequestHandler<GetAllTransactionsQuery, GetAllTransactionsResponse>
 {
     public async Task<GetAllTransactionsResponse> Handle(GetAllTransactionsQuery request, CancellationToken cancellationToken)
     {

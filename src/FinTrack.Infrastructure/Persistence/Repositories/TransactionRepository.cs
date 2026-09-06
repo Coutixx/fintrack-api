@@ -16,7 +16,7 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
     }
 
     public Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken) =>
-        context.Transactions.FirstOrDefaultAsync(a => a.Id == id && a.AccountId == accountId, cancellationToken);
+        context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.Account.UserId == userId && t.AccountId == accountId, cancellationToken);
 
     public async Task<List<TransactionItem>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken)
     {

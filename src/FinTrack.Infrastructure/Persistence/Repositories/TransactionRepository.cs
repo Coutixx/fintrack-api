@@ -1,5 +1,7 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Features.Transactions;
 using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
 using FinTrack.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +15,27 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         await context.SaveChangesAsync();
     }
 
-    public Task<Transaction?> GetByIdAsync(Guid id, Guid accountId, CancellationToken cancellationToken) =>
+    public Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken) =>
         context.Transactions.FirstOrDefaultAsync(a => a.Id == id && a.AccountId == accountId, cancellationToken);
 
-    public Task<List<Transaction>> GetAllAsync(Guid accountId, CancellationToken cancellationToken) =>
-        context.Transactions.AsNoTracking().Where(a =>
-        a.AccountId == accountId).ToListAsync(cancellationToken);
+    public async Task<List<TransactionItem>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken)
+    {
+        var query = context.Transactions.AsNoTracking().Where(t => t.Account.UserId == userId);
+
+        if (accountId.HasValue) query = query.Where(t => t.AccountId == accountId);
+
+        if (type.HasValue) query = query.Where(t => t.Type == type);
+
+        return await query.Select(a => new TransactionItem(
+            a.Id,
+            a.Description,
+            a.Amount,
+            a.Type,
+            a.Date,
+            a.Status
+        ))
+        .ToListAsync(cancellationToken);
+    }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
         await context.SaveChangesAsync(cancellationToken);

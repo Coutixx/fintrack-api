@@ -1,6 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Categories;
-using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 using NSubstitute;
 
@@ -22,9 +21,15 @@ public class GetAllCategoriesHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
+        var userId = Guid.NewGuid();
         var type = TransactionType.Income;
-        var category = new Category { Name = "Conta", Type = type, UserId = id };
-        var categories = new List<Category> { category };
+        var category = new CategoryItem(
+            id,
+            "Conta",
+            type,
+            "Preto"
+        );
+        var categories = new List<CategoryItem> { category };
 
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(categories);
@@ -34,8 +39,8 @@ public class GetAllCategoriesHandlerTests
 
         // Assert
         Assert.NotNull(response);
-        Assert.Single(response.categories);
-        Assert.Equal("Conta", response.categories.First().Name);
+        Assert.Single(response.Categories);
+        Assert.Equal("Conta", response.Categories.First().Name);
 
     }
 
@@ -44,16 +49,17 @@ public class GetAllCategoriesHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
+
         var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
-        _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(new List<Category>());
+        _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(new List<CategoryItem>());
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Empty(response.categories);
+        Assert.Empty(response.Categories);
     }
 
     [Fact]

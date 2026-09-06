@@ -1,6 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Features.Accounts;
-using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 using NSubstitute;
 
@@ -20,19 +19,25 @@ public class GetAllAccountsHandlerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var account = new Account { Name = "Conta", Type = AccountType.Checking, UserId = id };
-        var accounts = new List<Account> { account };
+        var userId = Guid.NewGuid();
+        var account = new AccountItem(
+            id,
+            "Conta",
+            AccountType.Checking,
+            2332
+        );
+        var accounts = new List<AccountItem> { account };
 
-        _userContext.UserId.Returns(id);
-        _accountRepository.GetAllAsync(id, Arg.Any<CancellationToken>()).Returns(accounts);
+        _userContext.UserId.Returns(userId);
+        _accountRepository.GetAllAsync(userId, Arg.Any<CancellationToken>()).Returns(accounts);
 
         // Act
         var response = await _handler.Handle(new GetAllAccountsQuery(), CancellationToken.None);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Single(response.accounts);
-        Assert.Equal("Conta", response.accounts.First().Name);
+        Assert.Single(response.Accounts);
+        Assert.Equal("Conta", response.Accounts.First().Name);
 
     }
 
@@ -42,14 +47,14 @@ public class GetAllAccountsHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         _userContext.UserId.Returns(id);
-        _accountRepository.GetAllAsync(id, Arg.Any<CancellationToken>()).Returns(new List<Account>());
+        _accountRepository.GetAllAsync(id, Arg.Any<CancellationToken>()).Returns(new List<AccountItem>());
 
         // Act
         var response = await _handler.Handle(new GetAllAccountsQuery(), CancellationToken.None);
 
         // Assert
         Assert.NotNull(response);
-        Assert.Empty(response.accounts);
+        Assert.Empty(response.Accounts);
     }
 
     [Fact]

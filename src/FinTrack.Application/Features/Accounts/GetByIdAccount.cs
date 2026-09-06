@@ -13,7 +13,7 @@ public record GetByIdAccountResponse(
     AccountType Type,
     decimal CurrentBalance,
     DateTime CreatedAt
-    );
+);
 
 public class GetByIdAccountValidator : AbstractValidator<GetByIdAccountQuery>
 {
@@ -31,11 +31,11 @@ public class GetByIdAccountHandler(IAccountRepository accountRepository, IUserCo
             ?? throw new KeyNotFoundException($"Conta com ID {request.Id} não encontrada");
 
         return new GetByIdAccountResponse(
-        account.Id,
-        account.Name,
-        account.Type,
-        account.CurrentBalance,
-        account.CreatedAt
+            account.Id,
+            account.Name,
+            account.Type,
+            account.CurrentBalance,
+            account.CreatedAt
         );
     }
 }

@@ -341,9 +341,9 @@ Implementar o núcleo financeiro do sistema.
 
 - [x] Criar Transaction
 - [ ] CRUD
-- [ ] Atualização automática do saldo
-- [ ] Estorno ao excluir
-- [ ] Soft Delete
+- [x] Atualização automática do saldo
+- [x] Estorno ao excluir
+- [x] Soft Delete
 - [ ] Testes unitários
 
 ### Critérios de conclusão

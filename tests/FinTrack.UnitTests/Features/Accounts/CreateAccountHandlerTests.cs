@@ -22,7 +22,7 @@ public class CreateAccountHandlerTests
         var request = new CreateAccountCommand("Henrique", AccountType.Checking, 1983.93m);
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
-        _accountRepository.AddAsync(Arg.Any<Account>()).Returns(Task.CompletedTask);
+        _accountRepository.AddAsync(Arg.Any<Account>(), CancellationToken.None).Returns(Task.CompletedTask);
 
         // Act
         var response = await _handler.Handle(request, CancellationToken.None);
@@ -37,7 +37,7 @@ public class CreateAccountHandlerTests
             a.CurrentBalance == request.InitialBalance &&
             a.UserId == userId &&
             a.CreatedAt != default
-        ));
+        ), CancellationToken.None);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class CreateAccountHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        await _accountRepository.Received(1).AddAsync(Arg.Is<Account>(a => a.InitialBalance == 0));
+        await _accountRepository.Received(1).AddAsync(Arg.Is<Account>(a => a.InitialBalance == 0), CancellationToken.None);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class CreateAccountHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        await _accountRepository.Received(1).AddAsync(Arg.Is<Account>(a => a.UserId == userId));
+        await _accountRepository.Received(1).AddAsync(Arg.Is<Account>(a => a.UserId == userId), CancellationToken.None);
     }
 
     [Fact]
@@ -81,6 +81,6 @@ public class CreateAccountHandlerTests
 
         // Assert
         await _accountRepository.Received(1).AddAsync(Arg.Is<Account>(a => a.InitialBalance == request.InitialBalance &&
-        a.CurrentBalance == request.InitialBalance));
+        a.CurrentBalance == request.InitialBalance), CancellationToken.None);
     }
 }

@@ -51,7 +51,7 @@ public class RegisterHandler(IUserRepository userRepository, ITokenService token
             CreatedAt = DateTime.UtcNow
         };
 
-        await userRepository.AddAsync(user);
+        await userRepository.AddAsync(user, cancellationToken);
 
         var token = tokenService.GenerateToken(user);
 

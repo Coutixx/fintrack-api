@@ -9,10 +9,10 @@ namespace FinTrack.Infrastructure.Persistence.Repositories;
 
 public class TransactionRepository(AppDbContext context) : ITransactionRepository
 {
-    public async Task AddAsync(Transaction transaction)
+    public async Task AddAsync(Transaction transaction, CancellationToken cancellationToken)
     {
         context.Transactions.Add(transaction);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken) =>

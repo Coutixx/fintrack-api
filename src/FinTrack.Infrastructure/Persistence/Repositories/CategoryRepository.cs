@@ -9,10 +9,10 @@ namespace FinTrack.Infrastructure.Persistence.Repositories;
 
 public class CategoryRepository(AppDbContext context) : ICategoryRepository
 {
-    public async Task AddAsync(Category category)
+    public async Task AddAsync(Category category, CancellationToken cancellationToken)
     {
         context.Categories.Add(category);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>

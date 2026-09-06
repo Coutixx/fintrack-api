@@ -5,7 +5,7 @@ namespace FinTrack.Application.Common.Interfaces;
 
 public interface IAccountRepository
 {
-    Task AddAsync(Account account);
+    Task AddAsync(Account account, CancellationToken cancellationToken);
 
     Task<Account?> GetByIdAsync(Guid id, Guid userId, CancellationToken token);
 

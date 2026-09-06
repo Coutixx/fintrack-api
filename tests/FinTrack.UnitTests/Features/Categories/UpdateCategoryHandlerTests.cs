@@ -48,7 +48,6 @@ public class UpdateCategoryHandlerTests
         Assert.Equal(TransactionType.Income, response.Type);
         Assert.Equal("Cor Nova", response.Color);
         Assert.Equal(id, response.Id);
-        Assert.NotNull(response.UpdatedAt);
         await _categoryRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

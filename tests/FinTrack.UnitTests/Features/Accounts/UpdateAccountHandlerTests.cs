@@ -38,7 +38,6 @@ public class UpdateAccountHandlerTests
         Assert.Equal("Nome Novo", response.Name);
         Assert.Equal(AccountType.Checking, response.Type);
         Assert.Equal(id, response.Id);
-        Assert.NotNull(response.UpdatedAt);
         await _accountRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

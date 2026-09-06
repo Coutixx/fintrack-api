@@ -45,7 +45,7 @@ public class CreateAccountHandler(IAccountRepository accountRepository, IUserCon
             CreatedAt = DateTime.UtcNow
         };
 
-        await accountRepository.AddAsync(account);
+        await accountRepository.AddAsync(account, cancellationToken);
         return new CreateAccountResponse(account.Id);
     }
 }

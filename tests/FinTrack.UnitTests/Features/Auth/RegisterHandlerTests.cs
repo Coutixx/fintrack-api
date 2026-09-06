@@ -26,7 +26,7 @@ public class RegisterHandlerTests
             .Returns(Task.FromResult(false));
 
         _userRepository
-            .AddAsync(Arg.Any<User>())
+            .AddAsync(Arg.Any<User>(), CancellationToken.None)
             .Returns(Task.CompletedTask);
 
         _passwordHasher
@@ -49,7 +49,7 @@ public class RegisterHandlerTests
             u.Email == request.Email &&
             u.PasswordHash != string.Empty &&
             u.CreatedAt <= DateTime.UtcNow
-        ));
+        ), CancellationToken.None);
         _tokenService.Received(1).GenerateToken(Arg.Any<User>());
     }
 
@@ -75,7 +75,7 @@ public class RegisterHandlerTests
         await _userRepository.Received(1).AddAsync(Arg.Is<User>(u =>
             u.Name == request.Name &&
             u.Email == request.Email &&
-            u.PasswordHash == "fake-hash"));
+            u.PasswordHash == "fake-hash"), CancellationToken.None);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class RegisterHandlerTests
             _handler.Handle(request, CancellationToken.None));
 
         _passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
-        await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
+        await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>(), CancellationToken.None);
         _tokenService.DidNotReceive().GenerateToken(Arg.Any<User>());
     }
 }

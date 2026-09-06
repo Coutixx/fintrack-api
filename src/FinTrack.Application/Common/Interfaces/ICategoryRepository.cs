@@ -6,7 +6,7 @@ namespace FinTrack.Application.Common.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task AddAsync(Category category);
+    Task AddAsync(Category category, CancellationToken cancellationToken);
 
     Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 

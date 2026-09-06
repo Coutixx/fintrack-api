@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using DotNetEnv;
+using FinTrack.Api.Exceptions;
 using FinTrack.Application;
 using FinTrack.Infrastructure;
 
@@ -14,7 +15,12 @@ builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();

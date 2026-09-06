@@ -6,7 +6,7 @@ namespace FinTrack.Application.Common.Interfaces;
 
 public interface ITransactionRepository
 {
-    Task AddAsync(Transaction transaction);
+    Task AddAsync(Transaction transaction, CancellationToken cancellationToken);
 
     Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken);
 

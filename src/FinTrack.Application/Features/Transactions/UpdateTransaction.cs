@@ -9,11 +9,11 @@ namespace FinTrack.Application.Features.Transactions;
 public record UpdateTransactionCommand(
     Guid Id,
     Guid AccountId,
-    string? Description = null,
-    decimal? Amount = null,
-    TransactionType? Type = null,
-    DateTime? Date = null,
-    TransactionStatus? Status = null
+    string Description,
+    decimal Amount,
+    TransactionType Type,
+    DateTime Date,
+    TransactionStatus Status
 ) : IRequest<UpdateTransactionResponse>;
 
 public record UpdateTransactionResponse(
@@ -35,21 +35,16 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .NotEmpty().WithMessage("O ID da conta é obrigatório.");
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("A descrição da transação é obrigatória.")
-            .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.")
-            .When(x => x.Description != null);
+            .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Amount)
             .NotNull().WithMessage("O valor da transação é obrigatório.")
-            .GreaterThan(0).WithMessage("O valor da transção deve ser maior que 0.")
-            .When(x => x.Amount.HasValue);
+            .GreaterThan(0).WithMessage("O valor da transção deve ser maior que 0.");
         RuleFor(x => x.Date)
-            .NotEmpty().WithMessage("A data da transação é inválida.")
-            .When(x => x.Date.HasValue);
+            .NotEmpty().WithMessage("A data da transação é inválida.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de transação é inválido.")
-            .When(x => x.Type.HasValue);
+            .IsInEnum().WithMessage("O tipo de transação é inválido.");
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("O status da transação é inválido")
-            .When(x => x.Status.HasValue);
+            .IsInEnum().WithMessage("O status da transação é inválido");
     }
 }
 public class UpdateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<UpdateTransactionCommand, UpdateTransactionResponse>
@@ -72,9 +67,9 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
             cancellationToken
         ) ?? throw new KeyNotFoundException("Conta não encontrada.");
 
-        var newAmount = request.Amount ?? oldAmount;
-        var newType = request.Type ?? oldType;
-        var newStatus = request.Status ?? oldStatus;
+        var newAmount = request.Amount;
+        var newType = request.Type;
+        var newStatus = request.Status;
 
         if (category.Type != newType) throw new ArgumentException("O tipo da transação não é igual ao da categoria.");
 
@@ -85,8 +80,10 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
         transaction.Description = request.Description ?? transaction.Description;
         transaction.Amount = newAmount;
         transaction.Type = newType;
-        transaction.Date = request.Date ?? transaction.Date;
-        transaction.Status = request.Status ?? transaction.Status;
+        transaction.Date = request.Date;
+        transaction.Status = request.Status;
+
+        transaction.UpdatedAt = DateTime.UtcNow;
 
         await transactionRepository.SaveChangesAsync(cancellationToken);
 

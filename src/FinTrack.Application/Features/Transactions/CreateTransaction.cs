@@ -17,7 +17,7 @@ public record CreateTransactionCommand(
     TransactionStatus Status
 ) : IRequest<CreateTransactionResponse>;
 
-public record CreateTransactionResponse(Guid Id);
+public record CreateTransactionResponse(Guid Id, Guid AccountId);
 
 public class CreateTransactionValidator : AbstractValidator<CreateTransactionCommand>
 {
@@ -32,7 +32,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
             .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Amount)
             .NotNull().WithMessage("O valor da transação é obrigatório.")
-            .GreaterThan(0).WithMessage("O valor da transão deve ser maior que 0.");
+            .GreaterThan(0).WithMessage("O valor da transação deve ser maior que 0.");
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage("A data da transação é obrigatória.");
         RuleFor(x => x.Type)
@@ -73,7 +73,7 @@ public class CreateTransactionHandler(ITransactionRepository transactionReposito
             CategoryId = request.CategoryId
         };
 
-        await transactionRepository.AddAsync(transaction);
-        return new CreateTransactionResponse(transaction.Id);
+        await transactionRepository.AddAsync(transaction, cancellationToken);
+        return new CreateTransactionResponse(transaction.Id, transaction.AccountId);
     }
 }

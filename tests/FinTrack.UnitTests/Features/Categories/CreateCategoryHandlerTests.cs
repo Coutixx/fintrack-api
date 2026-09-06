@@ -22,7 +22,7 @@ public class CreateCategoryHandlerTests
     {
         // Arrange
         var request = new CreateCategoryCommand("Henrique", TransactionType.Income, "Blue");
-        _categoryRepository.AddAsync(Arg.Any<Category>()).Returns(Task.CompletedTask);
+        _categoryRepository.AddAsync(Arg.Any<Category>(), CancellationToken.None).Returns(Task.CompletedTask);
 
         // Act
         var response = await _handler.Handle(request, CancellationToken.None);
@@ -34,7 +34,7 @@ public class CreateCategoryHandlerTests
             c.Name == request.Name &&
             c.Type == request.Type &&
             c.Color == request.Color
-        ));
+        ), CancellationToken.None);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class CreateCategoryHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        await _categoryRepository.Received(1).AddAsync(Arg.Is<Category>(c => c.UserId == _userContext.UserId));
+        await _categoryRepository.Received(1).AddAsync(Arg.Is<Category>(c => c.UserId == _userContext.UserId), CancellationToken.None);
     }
 
     [Fact]
@@ -64,6 +64,6 @@ public class CreateCategoryHandlerTests
         await _categoryRepository.Received(1).AddAsync(Arg.Is<Category>(c =>
         c.CreatedAt >= beforeExecution &&
         c.CreatedAt <= DateTime.UtcNow
-        ));
+        ), CancellationToken.None);
     }
 }

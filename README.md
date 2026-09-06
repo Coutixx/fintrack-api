@@ -245,11 +245,11 @@ Category
 
 ## Transactions
 
-- GET `/api/transactions`
-- GET `/api/transactions/{id}`
-- POST `/api/transactions`
-- PUT `/api/transactions/{id}`
-- DELETE `/api/transactions/{id}`
+- GET `/api/accounts/{accountId}/transactions`
+- GET `/api/accounts/{accountId}/transactions/{id}`
+- POST `/api/accounts/{accountId}/transactions`
+- PUT `/api/accounts/{accountId}/transactions/{id}`
+- DELETE `/api/accounts/{accountId}/transactions/{id}`
 
 ---
 
@@ -340,7 +340,7 @@ Implementar o núcleo financeiro do sistema.
 ### Entregas
 
 - [x] Criar Transaction
-- [ ] CRUD
+- [x] CRUD
 - [x] Atualização automática do saldo
 - [x] Estorno ao excluir
 - [x] Soft Delete

@@ -15,8 +15,7 @@ public record UpdateAccountResponse(
     Guid Id,
     string Name,
     AccountType Type,
-    decimal CurrentBalance,
-    DateTime? UpdatedAt
+    decimal CurrentBalance
 );
 
 public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
@@ -24,10 +23,10 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
     public UpdateAccountValidator()
     {
         RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("O nome da conta é obrigatório.")
             .MaximumLength(100).WithMessage("O nome da conta pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de transação é inválido.");
-
+            .IsInEnum().WithMessage("O tipo de conta é inválido.");
     }
 }
 
@@ -40,6 +39,7 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
 
         account.Name = request.Name;
         account.Type = request.Type;
+
         account.UpdatedAt = DateTime.UtcNow;
 
         await accountRepository.SaveChangesAsync(cancellationToken);
@@ -48,8 +48,7 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
         account.Id,
         account.Name,
         account.Type,
-        account.CurrentBalance,
-        account.UpdatedAt
+        account.CurrentBalance
         );
     }
 }

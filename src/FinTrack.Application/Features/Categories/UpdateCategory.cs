@@ -16,20 +16,25 @@ public record UpdateCategoryResponse(
     Guid Id,
     string Name,
     TransactionType Type,
-    string Color,
-    DateTime? UpdatedAt
+    string Color
 );
 
 public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
 {
-    public UpdateCategoryValidator()
+    public UpdateCategoryValidator(ICategoryRepository categoryRepository, IUserContext userContext)
     {
         RuleFor(x => x.Name)
-            .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
+            .NotEmpty().WithMessage("O nome da categoria é obrigatório.")
+            .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.")
+            .MustAsync(async (name, cancellation) =>
+            {
+                var userId = userContext.UserId;
+                return !await categoryRepository.ExistingByNameAsync(userId, name, cancellation);
+            });
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("O tipo de é inválido.");
         RuleFor(x => x.Color)
-            .NotNull().WithMessage("A cor da categoria é obrigatória.")
+            .NotEmpty().WithMessage("A cor da categoria é obrigatória.")
             .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
     }
 }
@@ -44,6 +49,7 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUser
         category.Name = request.Name;
         category.Type = request.Type;
         category.Color = request.Color;
+
         category.UpdatedAt = DateTime.UtcNow;
 
         await categoryRepository.SaveChangesAsync(cancellationToken);
@@ -52,8 +58,7 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUser
         category.Id,
         category.Name,
         category.Type,
-        category.Color,
-        category.UpdatedAt
+        category.Color
         );
     }
 }

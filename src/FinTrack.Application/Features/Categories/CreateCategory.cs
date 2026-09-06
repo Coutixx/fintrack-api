@@ -50,7 +50,7 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IUser
             CreatedAt = DateTime.UtcNow
         };
 
-        await categoryRepository.AddAsync(category);
+        await categoryRepository.AddAsync(category, cancellationToken);
         return new CreateCategoryResponse(category.Id);
     }
 }

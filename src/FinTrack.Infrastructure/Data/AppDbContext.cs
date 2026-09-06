@@ -20,5 +20,4 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Category>().HasQueryFilter(c => c.DeletedAt == null);
         modelBuilder.Entity<Transaction>().HasQueryFilter(t => t.DeletedAt == null);
     }
-
 }

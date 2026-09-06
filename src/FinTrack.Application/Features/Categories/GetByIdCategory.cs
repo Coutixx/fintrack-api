@@ -20,7 +20,7 @@ public class GetByIdCategoryValidator : AbstractValidator<GetByIdCategoryQuery>
     public GetByIdCategoryValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("O ID é obrigatório.");
+            .NotEmpty().WithMessage("O ID da categoria é obrigatório.");
     }
 }
 public class GetByIdCategoryHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<GetByIdCategoryQuery, GetByIdCategoryResponse>
@@ -28,7 +28,7 @@ public class GetByIdCategoryHandler(ICategoryRepository categoryRepository, IUse
     public async Task<GetByIdCategoryResponse> Handle(GetByIdCategoryQuery request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria com ID {request.Id} não encontrada");
+            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
 
         return new GetByIdCategoryResponse(
         category.Id,

@@ -10,7 +10,7 @@ public class DeleteCategoryHandler(ICategoryRepository categoryRepository, IUser
     public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria com ID {request.Id} não encontrada");
+            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
 
         category.DeletedAt = DateTime.UtcNow;
 

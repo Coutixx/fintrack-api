@@ -32,7 +32,7 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("O ID da transação é obrigatório.");
         RuleFor(x => x.AccountId)
-            .NotEmpty().WithMessage("O ID da conta é obrigatório");
+            .NotEmpty().WithMessage("O ID da conta é obrigatório.");
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("A descrição da transação é obrigatória.")
             .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.")
@@ -60,14 +60,14 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
             ?? throw new KeyNotFoundException($"Transação não encontrada.");
 
         var category = await categoryRepository.GetByIdAsync(transaction.CategoryId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria com ID: {transaction.CategoryId} não encontrada.");
+            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
 
         var oldAmount = transaction.Amount;
         var oldType = transaction.Type;
         var oldStatus = transaction.Status;
 
         var account = await accountRepository.GetByIdAsync(
-            request.AccountId,
+            transaction.AccountId,
             userContext.UserId,
             cancellationToken
         ) ?? throw new KeyNotFoundException("Conta não encontrada.");

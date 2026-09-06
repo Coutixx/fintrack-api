@@ -31,7 +31,7 @@ public class GetByIdTransactionHandler(ITransactionRepository transactionReposit
     public async Task<GetByIdTransactionResponse> Handle(GetByIdTransactionQuery request, CancellationToken cancellationToken)
     {
         var transaction = await transactionRepository.GetByIdAsync(request.Id, userContext.UserId, request.AccountId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Transação com ID: {request.Id} não encontrada.");
+            ?? throw new KeyNotFoundException($"Transação não encontrada.");
 
         return new GetByIdTransactionResponse(
             transaction.Id,

@@ -27,9 +27,9 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
         RuleFor(x => x.Name)
             .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de transação enviado é inválido.");
+            .IsInEnum().WithMessage("O tipo de é inválido.");
         RuleFor(x => x.Color)
-            .NotNull().WithMessage("A cor da categoria é obrigatória")
+            .NotNull().WithMessage("A cor da categoria é obrigatória.")
             .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
     }
 }
@@ -39,7 +39,7 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUser
     public async Task<UpdateCategoryResponse> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await categoryRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria com ID {request.Id} não encontrada");
+            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
 
         category.Name = request.Name;
         category.Type = request.Type;

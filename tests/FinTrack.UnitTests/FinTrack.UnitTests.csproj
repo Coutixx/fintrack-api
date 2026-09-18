@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\FinTrack.Api\FinTrack.Api.csproj" />
     <ProjectReference Include="..\..\src\FinTrack.Application\FinTrack.Application.csproj" />
     <ProjectReference Include="..\..\src\FinTrack.Domain\FinTrack.Domain.csproj" />
   </ItemGroup>

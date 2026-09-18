@@ -14,6 +14,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpPost(Name = "CreateAccount")]
     [ProducesResponseType(typeof(CreateAccountResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateAccountCommand request, CancellationToken cancellationToken)
     {
@@ -24,6 +25,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}", Name = "GetByIdAccount")]
     [ProducesResponseType(typeof(GetByIdAccountResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] GetByIdAccountQuery request, CancellationToken cancellationToken)
@@ -35,6 +37,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpGet(Name = "GetAllAccounts")]
     [ProducesResponseType(typeof(GetAllAccountsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(GetAllAccountsQuery request, CancellationToken cancellationToken)
     {
@@ -45,6 +48,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}", Name = "UpdateAccount")]
     [ProducesResponseType(typeof(UpdateAccountResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateAccountCommand request, CancellationToken cancellationToken)
@@ -56,6 +60,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}", Name = "DeleteAccount")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] DeleteAccountCommand request, CancellationToken cancellationToken)

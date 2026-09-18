@@ -15,6 +15,7 @@ public class TransactionsController(ISender sender) : ControllerBase
     [HttpPost(Name = "CreateTransaction")]
     [ProducesResponseType(typeof(CreateTransactionResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create(Guid accountId, [FromBody] CreateTransactionCommand request, CancellationToken cancellationToken)
     {
@@ -34,6 +35,7 @@ public class TransactionsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}", Name = "GetByIdTransaction")]
     [ProducesResponseType(typeof(GetByIdTransactionResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] GetByIdTransactionQuery request, CancellationToken cancellationToken)
@@ -42,9 +44,10 @@ public class TransactionsController(ISender sender) : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("api/accounts/{accountId:guid?}/[controller]", Name = "GetAllTransactions")]
+    [HttpGet("/api/accounts/{accountId:guid?}/[controller]", Name = "GetAllTransactions")]
     [ProducesResponseType(typeof(GetAllTransactionsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll([FromRoute] Guid? accountId, [FromQuery] TransactionType? type, CancellationToken cancellationToken)
     {
@@ -55,6 +58,7 @@ public class TransactionsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}", Name = "UpdateTransaction")]
     [ProducesResponseType(typeof(UpdateTransactionResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromRoute] Guid id, Guid accountId, [FromBody] UpdateTransactionCommand request, CancellationToken cancellationToken)
@@ -75,6 +79,7 @@ public class TransactionsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}", Name = "DeleteTransaction")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] DeleteTransactionCommand request, CancellationToken cancellationToken)

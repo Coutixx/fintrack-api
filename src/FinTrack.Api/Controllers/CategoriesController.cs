@@ -14,6 +14,8 @@ public class CategoriesController(ISender sender) : ControllerBase
     [HttpPost(Name = "CreateCategory")]
     [ProducesResponseType(typeof(CreateCategoryResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateCategoryCommand request, CancellationToken cancellationToken)
     {
@@ -24,6 +26,7 @@ public class CategoriesController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}", Name = "GetByIdCategory")]
     [ProducesResponseType(typeof(GetByIdCategoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] GetByIdCategoryQuery request, CancellationToken cancellationToken)
@@ -35,6 +38,7 @@ public class CategoriesController(ISender sender) : ControllerBase
     [HttpGet(Name = "GetAllCategories")]
     [ProducesResponseType(typeof(GetAllCategoriesResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllCategoriesQuery request, CancellationToken cancellationToken)
     {
@@ -45,7 +49,9 @@ public class CategoriesController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}", Name = "UpdateCategory")]
     [ProducesResponseType(typeof(UpdateCategoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
@@ -56,6 +62,7 @@ public class CategoriesController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}", Name = "DeleteCategory")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] DeleteCategoryCommand request, CancellationToken cancellationToken)

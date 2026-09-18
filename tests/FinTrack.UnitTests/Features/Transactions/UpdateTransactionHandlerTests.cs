@@ -1,0 +1,137 @@
+using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Features.Transactions;
+using FinTrack.Domain.Entities;
+using FinTrack.Domain.Enums;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
+
+namespace FinTrack.UnitTests.Features.Transactions;
+
+public class UpdateTransactionHandlerTests
+{
+    private readonly ITransactionRepository _transactionRepository = Substitute.For<ITransactionRepository>();
+    private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IUserContext _userContext = Substitute.For<IUserContext>();
+
+    private readonly UpdateTransactionHandler _handler;
+
+    public UpdateTransactionHandlerTests() =>
+        _handler = new UpdateTransactionHandler(_transactionRepository, _accountRepository, _categoryRepository, _userContext);
+
+    [Fact]
+    public async Task Handle_ValidRequest_UpdatesTransaction()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var date = new DateTime(2026, 09, 10);
+        var transaction = new Transaction
+        {
+            Id = id,
+            AccountId = accountId,
+            CategoryId = categoryId,
+            Description = "Descrição antiga",
+            Amount = 100,
+            Type = TransactionType.Income,
+            Date = date.AddDays(-1),
+            Status = TransactionStatus.Pending
+        };
+        var account = new Account { Id = accountId, UserId = userId, CurrentBalance = 100 };
+        var category = new Category { Id = categoryId, UserId = userId, Type = TransactionType.Expense };
+        var request = new UpdateTransactionCommand(
+            id,
+            accountId,
+            "Descrição nova",
+            50,
+            TransactionType.Expense,
+            date,
+            TransactionStatus.Paid);
+
+        _userContext.UserId.Returns(userId);
+        _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
+        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
+
+        // Act
+        var response = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(id, response.Id);
+        Assert.Equal(request.Description, response.Description);
+        Assert.Equal(request.Amount, response.Amount);
+        Assert.Equal(request.Type, response.Type);
+        Assert.Equal(request.Date, response.Date);
+        Assert.Equal(request.Status, response.Status);
+        await _transactionRepository.Received(1).SaveChangesAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task Handle_ValidRequest_RecalculatesAccountBalance()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var transaction = new Transaction
+        {
+            Id = id,
+            AccountId = accountId,
+            CategoryId = categoryId,
+            Amount = 100,
+            Type = TransactionType.Income,
+            Status = TransactionStatus.Paid
+        };
+        var account = new Account { Id = accountId, UserId = userId, CurrentBalance = 200 };
+        var category = new Category { Id = categoryId, UserId = userId, Type = TransactionType.Expense };
+        var request = new UpdateTransactionCommand(
+            id,
+            accountId,
+            "Despesa",
+            50,
+            TransactionType.Expense,
+            DateTime.UtcNow,
+            TransactionStatus.Paid);
+
+        _userContext.UserId.Returns(userId);
+        _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
+        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
+
+        // Act
+        await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(50, account.CurrentBalance);
+    }
+
+    [Fact]
+    public async Task Handle_NonExistingTransaction_ThrowsNotFound()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        _userContext.UserId.Returns(userId);
+        _transactionRepository
+            .GetByIdAsync(id, userId, accountId, CancellationToken.None)
+            .ReturnsNull();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            _handler.Handle(
+                new UpdateTransactionCommand(
+                    id,
+                    accountId,
+                    "Descrição",
+                    100,
+                    TransactionType.Income,
+                    DateTime.UtcNow,
+                    TransactionStatus.Paid),
+                CancellationToken.None));
+        await _transactionRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+}

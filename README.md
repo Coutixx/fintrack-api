@@ -344,7 +344,7 @@ Implementar o núcleo financeiro do sistema.
 - [x] Atualização automática do saldo
 - [x] Estorno ao excluir
 - [x] Soft Delete
-- [ ] Testes unitários
+- [x] Testes unitários
 
 ### Critérios de conclusão
 

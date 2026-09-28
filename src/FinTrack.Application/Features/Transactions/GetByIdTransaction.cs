@@ -23,7 +23,7 @@ public class GetByIdTransactionValidator : AbstractValidator<GetByIdTransactionQ
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("O ID da transação é obrigatório.");
         RuleFor(x => x.AccountId)
-            .NotEmpty().WithMessage("O ID da conta é obrigatório");
+            .NotEmpty().WithMessage("O ID da conta é obrigatório.");
     }
 }
 public class GetByIdTransactionHandler(ITransactionRepository transactionRepository, IUserContext userContext) : IRequestHandler<GetByIdTransactionQuery, GetByIdTransactionResponse>
@@ -31,7 +31,7 @@ public class GetByIdTransactionHandler(ITransactionRepository transactionReposit
     public async Task<GetByIdTransactionResponse> Handle(GetByIdTransactionQuery request, CancellationToken cancellationToken)
     {
         var transaction = await transactionRepository.GetByIdAsync(request.Id, userContext.UserId, request.AccountId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Transação não encontrada.");
+            ?? throw new KeyNotFoundException("Transação não encontrada.");
 
         return new GetByIdTransactionResponse(
             transaction.Id,

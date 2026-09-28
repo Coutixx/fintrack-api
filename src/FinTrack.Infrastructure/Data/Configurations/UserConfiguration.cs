@@ -25,8 +25,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         // PasswordHash (Segurança)
         builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
-
-        builder.HasQueryFilter(u => u.DeletedAt == null);
     }
 
 }

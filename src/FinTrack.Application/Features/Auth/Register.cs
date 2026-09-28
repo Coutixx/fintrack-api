@@ -40,13 +40,13 @@ public class RegisterHandler(IUserRepository userRepository, ITokenService token
         if (await userRepository.ExistingByEmailAsync(request.Email, cancellationToken))
             throw new InvalidCredentialException("E-mail já cadastrado.");
 
-        var PasswordHash = passwordHasher.Hash(request.Password);
+        var passwordHash = passwordHasher.Hash(request.Password);
 
         var user = new User
         {
             Email = request.Email,
             Name = request.Name,
-            PasswordHash = PasswordHash,
+            PasswordHash = passwordHash,
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow
         };
@@ -58,4 +58,3 @@ public class RegisterHandler(IUserRepository userRepository, ITokenService token
         return new RegisterResponse(user.Id, token);
     }
 }
-

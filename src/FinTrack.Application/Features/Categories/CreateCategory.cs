@@ -28,10 +28,10 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
             })
             .WithMessage("Já existe uma categoria com esse nome.");
         RuleFor(x => x.Color)
-            .NotNull().WithMessage("A cor da categoria é obrigatória")
+            .NotEmpty().WithMessage("A cor da categoria é obrigatória.")
             .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de transação é inválido.");
+            .IsInEnum().WithMessage("O tipo da categoria é inválido.");
     }
 }
 

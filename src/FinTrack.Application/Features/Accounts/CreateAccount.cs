@@ -22,10 +22,10 @@ public class CreateAccountValidator : AbstractValidator<CreateAccountCommand>
             .NotEmpty().WithMessage("O nome da conta é obrigatório.")
             .MaximumLength(100).WithMessage("O nome da conta pode ter no máximo 100 caracteres.");
         RuleFor(x => x.InitialBalance)
-            .NotNull().WithMessage("O valor saldo inicial é obrigatório")
-            .GreaterThanOrEqualTo(0).WithMessage("O saldo inicial não pode ser negativo.");
+            .GreaterThanOrEqualTo(0).When(x => x.InitialBalance.HasValue)
+            .WithMessage("O saldo inicial não pode ser negativo.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de transação é inválido.");
+            .IsInEnum().WithMessage("O tipo de conta é inválido.");
     }
 }
 

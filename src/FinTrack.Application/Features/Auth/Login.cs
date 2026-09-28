@@ -36,7 +36,7 @@ public class LoginHandler(IUserRepository userRepository, ITokenService tokenSer
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
-        if (user is null) throw new InvalidCredentialException("E-mail ou senha inválidos");
+        if (user is null) throw new InvalidCredentialException("E-mail ou senha inválidos.");
 
         bool isPasswordValid = passwordHasher.Verify(request.Password, user.PasswordHash);
         if (!isPasswordValid) throw new InvalidCredentialException("E-mail ou senha inválidos.");

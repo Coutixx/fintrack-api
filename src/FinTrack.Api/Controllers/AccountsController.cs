@@ -28,9 +28,9 @@ public class AccountsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById([FromRoute] GetByIdAccountQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await sender.Send(request, cancellationToken);
+        var response = await sender.Send(new GetByIdAccountQuery(id), cancellationToken);
         return Ok(response);
     }
 
@@ -39,7 +39,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAll(GetAllAccountsQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllAccountsQuery request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(request, cancellationToken);
         return Ok(response);
@@ -51,7 +51,7 @@ public class AccountsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateAccountRequest request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(new UpdateAccountCommand(id, request.Name, request.Type), cancellationToken);
         return Ok(response);

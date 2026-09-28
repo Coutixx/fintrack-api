@@ -29,9 +29,9 @@ public class CategoriesController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById([FromRoute] GetByIdCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await sender.Send(request, cancellationToken);
+        var response = await sender.Send(new GetByIdCategoryQuery(id), cancellationToken);
         return Ok(response);
     }
 
@@ -53,7 +53,7 @@ public class CategoriesController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(new UpdateCategoryCommand(id, request.Name, request.Type, request.Color), cancellationToken);
         return Ok(response);

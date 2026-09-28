@@ -6,6 +6,13 @@ using MediatR;
 
 namespace FinTrack.Application.Features.Transactions;
 
+public record UpdateTransactionRequest(
+    string Description,
+    decimal Amount,
+    TransactionType Type,
+    DateTime Date,
+    TransactionStatus Status
+);
 public record UpdateTransactionCommand(
     Guid Id,
     Guid AccountId,
@@ -38,13 +45,13 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.");
         RuleFor(x => x.Amount)
             .NotNull().WithMessage("O valor da transação é obrigatório.")
-            .GreaterThan(0).WithMessage("O valor da transção deve ser maior que 0.");
+            .GreaterThan(0).WithMessage("O valor da transação deve ser maior que 0.");
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage("A data da transação é inválida.");
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("O tipo de transação é inválido.");
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("O status da transação é inválido");
+            .IsInEnum().WithMessage("O status da transação é inválido.");
     }
 }
 public class UpdateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<UpdateTransactionCommand, UpdateTransactionResponse>
@@ -52,10 +59,10 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
     public async Task<UpdateTransactionResponse> Handle(UpdateTransactionCommand request, CancellationToken cancellationToken)
     {
         var transaction = await transactionRepository.GetByIdAsync(request.Id, userContext.UserId, request.AccountId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Transação não encontrada.");
+            ?? throw new KeyNotFoundException("Transação não encontrada.");
 
         var category = await categoryRepository.GetByIdAsync(transaction.CategoryId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
+            ?? throw new KeyNotFoundException("Categoria não encontrada.");
 
         var oldAmount = transaction.Amount;
         var oldType = transaction.Type;

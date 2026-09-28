@@ -7,6 +7,15 @@ using MediatR;
 
 namespace FinTrack.Application.Features.Transactions;
 
+public record CreateTransactionRequest(
+    Guid CategoryId,
+    string Description,
+    decimal Amount,
+    TransactionType Type,
+    DateTime Date,
+    TransactionStatus Status
+);
+
 public record CreateTransactionCommand(
     Guid AccountId,
     Guid CategoryId,
@@ -24,9 +33,9 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
     public CreateTransactionValidator()
     {
         RuleFor(x => x.AccountId)
-            .NotEmpty().WithMessage("O ID da conta é obrigatório");
+            .NotEmpty().WithMessage("O ID da conta é obrigatório.");
         RuleFor(x => x.CategoryId)
-            .NotEmpty().WithMessage("O ID da categoria é obrigatório");
+            .NotEmpty().WithMessage("O ID da categoria é obrigatório.");
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("A descrição da transação é obrigatória.")
             .MaximumLength(100).WithMessage("A descrição da transação pode ter no máximo 100 caracteres.");
@@ -38,7 +47,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
         RuleFor(x => x.Type)
             .IsInEnum().WithMessage("O tipo de transação é inválido.");
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("O status da transação é inválido");
+            .IsInEnum().WithMessage("O status da transação é inválido.");
     }
 }
 
@@ -47,10 +56,10 @@ public class CreateTransactionHandler(ITransactionRepository transactionReposito
     public async Task<CreateTransactionResponse> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
         var account = await accountRepository.GetByIdAsync(request.AccountId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Conta não encontrada.");
+            ?? throw new KeyNotFoundException("Conta não encontrada.");
 
         var category = await categoryRepository.GetByIdAsync(request.CategoryId, userContext.UserId, cancellationToken)
-            ?? throw new KeyNotFoundException($"Categoria não encontrada.");
+            ?? throw new KeyNotFoundException("Categoria não encontrada.");
 
         if (category.Type != request.Type) throw new ArgumentException("O tipo da transação não é igual ao da categoria.");
 

@@ -5,6 +5,11 @@ using MediatR;
 
 namespace FinTrack.Application.Features.Accounts;
 
+public record UpdateAccountRequest(
+    string Name,
+    AccountType Type
+);
+
 public record UpdateAccountCommand(
     Guid Id,
     string Name,
@@ -39,7 +44,6 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
 
         account.Name = request.Name;
         account.Type = request.Type;
-
         account.UpdatedAt = DateTime.UtcNow;
 
         await accountRepository.SaveChangesAsync(cancellationToken);

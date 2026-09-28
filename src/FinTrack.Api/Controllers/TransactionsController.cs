@@ -16,8 +16,9 @@ public class TransactionsController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(CreateTransactionResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create(Guid accountId, [FromBody] CreateTransactionCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromRoute] Guid accountId, [FromBody] CreateTransactionRequest request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(new CreateTransactionCommand(
             accountId,
@@ -38,9 +39,9 @@ public class TransactionsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById([FromRoute] GetByIdTransactionQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute] Guid id, [FromRoute] Guid accountId, CancellationToken cancellationToken)
     {
-        var response = await sender.Send(request, cancellationToken);
+        var response = await sender.Send(new GetByIdTransactionQuery(id, accountId), cancellationToken);
         return Ok(response);
     }
 
@@ -61,7 +62,7 @@ public class TransactionsController(ISender sender) : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, Guid accountId, [FromBody] UpdateTransactionCommand request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromRoute] Guid accountId, [FromBody] UpdateTransactionRequest request, CancellationToken cancellationToken)
     {
         var response = await sender.Send(new UpdateTransactionCommand(
             id,

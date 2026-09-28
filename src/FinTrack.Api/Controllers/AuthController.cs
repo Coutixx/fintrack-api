@@ -10,9 +10,10 @@ namespace FinTrack.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController(ISender sender) : ControllerBase
 {
-    [HttpPost("Register")]
+    [HttpPost("register")]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -20,7 +21,7 @@ public class AuthController(ISender sender) : ControllerBase
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPost("Login")]
+    [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

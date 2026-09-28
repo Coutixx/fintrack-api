@@ -1,414 +1,244 @@
-# 🏆 FinTrack API
+# FinTrack API
 
-Sistema de gestão financeira pessoal desenvolvido em **ASP.NET Core (.NET 10)** utilizando **Controllers**, **Clean Architecture (Feature-First)** e **Entity Framework Core**.
+API REST para gerenciamento de finanças pessoais, desenvolvida com ASP.NET Core 10,
+Entity Framework Core e PostgreSQL.
 
-O objetivo deste projeto é desenvolver uma API completa para gerenciamento financeiro, consolidando conceitos modernos de arquitetura de software, modelagem de domínio, validações desacopladas e regras de negócio reais.
+## Funcionalidades
 
-> 🚧 **Projeto em desenvolvimento**
->
-> Este README funciona temporariamente como documentação técnica e roadmap oficial do projeto. Após a conclusão, será convertido para um README voltado ao uso da aplicação.
+- Cadastro e autenticação de usuários com JWT.
+- Gerenciamento de contas financeiras.
+- Gerenciamento de categorias de receitas e despesas.
+- Gerenciamento de transações e atualização dos saldos das contas.
+- Isolamento de contas, categorias e transações por usuário autenticado.
+- Exclusão lógica de contas, categorias e transações.
+- Validação de requisições com FluentValidation.
+- Respostas de erro padronizadas com Problem Details.
+- Documentação da API com OpenAPI e Scalar.
 
----
+## Tecnologias
 
-# 🎯 Objetivos
-
-Durante o desenvolvimento deste projeto serão consolidados os seguintes conceitos:
-
-- Clean Architecture
-- Organização Feature-First
-- Controllers
-- Entity Framework Core
-- PostgreSQL
-- Docker (infraestrutura do banco)
-- FluentValidation
-- JWT Authentication
-- Global Exception Handler
-- Soft Delete
-- Paginação e filtros
-- Testes Unitários
-
----
-
-# 📌 Tecnologias
-
-- ASP.NET Core (.NET 10)
-- Controllers
-- Entity Framework Core
-- PostgreSQL
-- Docker
-- FluentValidation
-- JWT Bearer Authentication
+- .NET 10 / ASP.NET Core Controllers
+- MediatR e FluentValidation
+- Entity Framework Core 10
+- PostgreSQL 17
 - Scalar / OpenAPI
-- xUnit
+- xUnit e NSubstitute
+- Docker Compose
 
----
+## Arquitetura
 
-# 📂 Estrutura do Projeto
+O código é separado por responsabilidades e organizado por funcionalidade:
 
-```text
-FinTrack.sln
-│
-├── src
-│   ├── FinTrack.Domain
-│   │   ├── Common
-│   │   └── Entities
-│   │
-│   ├── FinTrack.Application
-│   │   ├── Common
-│   │   └── Features
-│   │       ├── Auth
-│   │       ├── Accounts
-│   │       ├── Categories
-│   │       └── Transactions
-│   │
-│   ├── FinTrack.Infrastructure
-│   │   ├── Data
-│   │   ├── Security
-│   │   └── Persistence
-│   │
-│   └── FinTrack.Api
-│       ├── Controllers
-│       ├── Extensions
-│       ├── ExceptionHandlers
-│       └── Program.cs
-│
-└── tests
-    └── FinTrack.UnitTests
-```
+| Projeto | Responsabilidade |
+|---------|------------------|
+| `FinTrack.Domain` | Entidades, enums e tipos comuns do domínio |
+| `FinTrack.Application` | Casos de uso MediatR, validações e interfaces |
+| `FinTrack.Infrastructure` | Persistência EF Core, repositórios, autenticação e serviços externos |
+| `FinTrack.Api` | Controllers, configuração da aplicação, OpenAPI e tratamento global de exceções |
+| `FinTrack.UnitTests` | Testes unitários dos handlers, validators e tratamento de exceções |
 
----
+As migrations do Entity Framework ficam em
+`src/FinTrack.Infrastructure/Migrations`.
 
-# 💾 Banco de Dados
+## Configuração e execução local
 
-O projeto utiliza **PostgreSQL** executado em um container Docker.
+### Requisitos
 
-A API será executada localmente através do .NET.
+- .NET SDK 10
+- Docker com Docker Compose
+- `dotnet-ef` para criar/aplicar migrations
 
-Para iniciar o banco:
+Instale a ferramenta do EF Core, caso ainda não esteja instalada:
 
 ```bash
-docker run \
---name fintrack-db \
--e POSTGRES_USER=postgres \
--e POSTGRES_PASSWORD=postgres \
--e POSTGRES_DB=fintrack \
--p 5432:5432 \
--d postgres:17
+dotnet tool install --global dotnet-ef
 ```
 
----
+Copie o exemplo de variáveis de ambiente:
 
-# 📋 Modelagem
+```bash
+cp .env.example .env
+```
 
-## BaseEntity
+Configure no `.env`:
 
-| Campo | Tipo |
-|--------|------|
-| Id | Guid |
-| CreatedAt | DateTime |
-| UpdatedAt | DateTime? |
-| DeletedAt | DateTime? |
+- `POSTGRES_USER`, `POSTGRES_DB` e `POSTGRES_PASSWORD` para o container PostgreSQL.
+- `ConnectionStrings__PostgresConnection` com os mesmos dados de conexão.
+- `JwtSettings__SECRET` com uma chave secreta forte para assinatura dos tokens JWT.
 
----
+O arquivo `.env` é ignorado pelo Git. Não versione segredos ou credenciais.
 
-## User
+Inicie o PostgreSQL:
 
-| Campo | Tipo |
-|--------|------|
-| Id | Guid |
-| Name | string |
-| Email | string |
-| PasswordHash | string |
+```bash
+docker compose up -d fintrack-db
+```
 
----
+Aplique as migrations:
 
-## Account
+```bash
+dotnet ef database update \
+  --project src/FinTrack.Infrastructure/FinTrack.Infrastructure.csproj \
+  --startup-project src/FinTrack.Api/FinTrack.Api.csproj
+```
 
-| Campo | Tipo |
-|--------|------|
-| Id | Guid |
-| Name | string |
-| Type | string |
-| InitialBalance | decimal |
-| CurrentBalance | decimal |
-| UserId | Guid |
+Execute a API:
 
----
+```bash
+dotnet run --project src/FinTrack.Api/FinTrack.Api.csproj --launch-profile http
+```
 
-## Category
+O perfil HTTP usa `http://localhost:5266`. No GitHub Codespaces, abra/encaminhe a porta
+`5266` no painel **Ports** e use a URL encaminhada.
 
-| Campo | Tipo |
-|--------|------|
-| Id | Guid |
-| Name | string |
-| Type | string |
-| Color | string |
-| UserId | Guid |
+## OpenAPI e Scalar
 
----
+- Scalar: `/scalar`
+- Documento OpenAPI: `/openapi/v1.json`
 
-## Transaction
-
-| Campo | Tipo |
-|--------|------|
-| Id | Guid |
-| Description | string |
-| Amount | decimal |
-| Type | string |
-| Date | DateTime |
-| Status | string |
-| AccountId | Guid |
-| CategoryId | Guid |
-
----
-
-# 🔗 Relacionamentos
+Por exemplo, localmente:
 
 ```text
-User
- ├── 1:N ─── Account
- └── 1:N ─── Category
-
-Account
- └── 1:N ─── Transaction
-
-Category
- └── 1:N ─── Transaction
+http://localhost:5266/scalar
+http://localhost:5266/openapi/v1.json
 ```
 
----
+## Autenticação
 
-# 🛡️ Regras de Negócio
+Os endpoints de autenticação são públicos. Registre-se com `POST /api/auth/register` ou
+obtenha um token com `POST /api/auth/login`. Envie o token nas rotas protegidas usando:
 
-## Usuários
+```text
+Authorization: Bearer <token>
+```
 
-- Cada usuário possui acesso apenas aos seus próprios dados.
-- O e-mail deve ser único.
-- A senha será armazenada utilizando hash.
+No Scalar, configure o cabeçalho `Authorization` com `Bearer ` seguido do token. Contas,
+categorias e transações exigem autenticação.
 
----
+## Endpoints
 
-## Contas
+### Autenticação
 
-- Uma conta pertence a apenas um usuário.
-- O saldo inicial não pode ser negativo.
-- O saldo atual será atualizado automaticamente pelas transações.
+| Método | Rota | Acesso |
+|--------|------|--------|
+| POST | `/api/auth/register` | Público |
+| POST | `/api/auth/login` | Público |
 
----
+### Contas
 
-## Categorias
+| Método | Rota |
+|--------|------|
+| GET | `/api/accounts` |
+| GET | `/api/accounts/{id}` |
+| POST | `/api/accounts` |
+| PUT | `/api/accounts/{id}` |
+| DELETE | `/api/accounts/{id}` |
 
-- Cada usuário possui suas próprias categorias.
-- Não é permitido criar categorias duplicadas para o mesmo usuário.
+### Categorias
 
----
+| Método | Rota |
+|--------|------|
+| GET | `/api/categories` |
+| GET | `/api/categories/{id}` |
+| POST | `/api/categories` |
+| PUT | `/api/categories/{id}` |
+| DELETE | `/api/categories/{id}` |
 
-## Transações
+A listagem aceita `type` opcional (`0` para receita, `1` para despesa), `page` (padrão
+`1`) e `pageSize` (padrão `10`, máximo `100`). Exemplo:
 
-- O valor deve ser maior que zero.
-- Receitas aumentam o saldo da conta.
-- Despesas diminuem o saldo da conta.
+```text
+GET /api/categories?type=1&page=2&pageSize=5
+```
+
+A resposta inclui `categories`, `page`, `pageSize` e `totalCount`.
+
+### Transações
+
+| Método | Rota |
+|--------|------|
+| GET | `/api/accounts/transactions` |
+| GET | `/api/accounts/{accountId}/transactions` |
+| GET | `/api/accounts/{accountId}/transactions/{id}` |
+| POST | `/api/accounts/{accountId}/transactions` |
+| PUT | `/api/accounts/{accountId}/transactions/{id}` |
+| DELETE | `/api/accounts/{accountId}/transactions/{id}` |
+
+A listagem aceita `type` opcional (`0` para receita, `1` para despesa). Exemplo:
+
+```text
+GET /api/accounts/transactions?type=0
+```
+
+## Modelo de dados
+
+As entidades herdam os campos comuns `Id`, `CreatedAt`, `UpdatedAt` e `DeletedAt`.
+O soft delete é aplicado a contas, categorias e transações; usuários não são excluídos
+logicamente.
+
+| Entidade | Campos específicos | Relacionamentos |
+|----------|--------------------|-----------------|
+| `User` | `Name`, `Email`, `PasswordHash` | Possui contas e categorias |
+| `Account` | `Name`, `Type`, `InitialBalance`, `CurrentBalance`, `UserId` | Pertence a um usuário; contém transações |
+| `Category` | `Name`, `Type`, `Color`, `UserId` | Pertence a um usuário; classifica transações |
+| `Transaction` | `Description`, `Amount`, `Type`, `Date`, `Status`, `AccountId`, `CategoryId` | Pertence a uma conta e categoria |
+
+### Enums
+
+Os enums são representados por valores numéricos nas requisições:
+
+| Enum | Valores |
+|------|---------|
+| `AccountType` | `0` Checking, `1` Savings, `2` Cash, `3` CreditCard |
+| `TransactionType` | `0` Income, `1` Expense |
+| `TransactionStatus` | `0` Pending, `1` Paid, `2` Cancelled |
+
+## Regras de negócio
+
+- Cada usuário acessa apenas suas próprias contas e categorias.
+- O e-mail do usuário é único.
+- Senhas são armazenadas como hash.
+- O saldo inicial da conta não pode ser negativo; se omitido, começa em zero.
+- Categorias não podem ter nomes duplicados para o mesmo usuário.
+- O tipo da transação deve corresponder ao tipo de sua categoria.
+- O valor da transação deve ser maior que zero.
+- Transações pagas atualizam o saldo: receitas somam e despesas subtraem.
 - Transações pendentes não alteram o saldo.
-- Ao excluir uma transação paga, o saldo deve ser recalculado.
-- Exclusões utilizarão Soft Delete.
-
----
-
-# 🚀 Endpoints
-
-## Auth
-
-- POST `/api/auth/register`
-- POST `/api/auth/login`
-
----
-
-## Accounts
-
-- GET `/api/accounts`
-- GET `/api/accounts/{id}`
-- POST `/api/accounts`
-- PUT `/api/accounts/{id}`
-- DELETE `/api/accounts/{id}`
-
----
-
-## Categories
-
-- GET `/api/categories`
-- GET `/api/categories/{id}`
-- POST `/api/categories`
-- PUT `/api/categories/{id}`
-- DELETE `/api/categories/{id}`
-
----
-
-## Transactions
-
-- GET `/api/accounts/{accountId}/transactions`
-- GET `/api/accounts/{accountId}/transactions/{id}`
-- POST `/api/accounts/{accountId}/transactions`
-- PUT `/api/accounts/{accountId}/transactions/{id}`
-- DELETE `/api/accounts/{accountId}/transactions/{id}`
-
----
-
-# 📅 Roadmap
-
-## 🚩 Sprint 1 — Infraestrutura & Autenticação
-
-### Objetivo
-
-Criar a base da aplicação e implementar autenticação.
-
-### Entregas
-
-- [x] Criar Solution
-- [x] Criar projetos da Clean Architecture
-- [x] Configurar PostgreSQL
-- [x] Configurar Docker
-- [x] Configurar EF Core
-- [x] Primeira Migration
-- [x] Criar User
-- [x] Cadastro
-- [x] Login
-- [x] JWT
-- [x] Testes unitários da autenticação
-
-### Critérios de conclusão
-
-- Usuário consegue se cadastrar.
-- Usuário consegue realizar login.
-- JWT válido é emitido.
-- Testes passando.
-
----
-
-## 🚩 Sprint 2 — Contas
-
-### Objetivo
-
-Implementar o gerenciamento de contas financeiras.
-
-### Entregas
-
-- [x] Criar Account
-- [x] FluentValidation
-- [x] CRUD completo
-- [x] Isolamento por usuário
-- [x] Testes unitários
-
-### Critérios de conclusão
-
-- CRUD funcionando.
-- Soft Delete funcionando.
-- Usuário acessa apenas suas contas.
-- Testes passando.
-
----
-
-## 🚩 Sprint 3 — Categorias
-
-### Objetivo
-
-Gerenciar categorias financeiras.
-
-### Entregas
-
-- [x] Criar Category
-- [x] CRUD
-- [x] Impedir nomes duplicados
-- [x] Paginação
-- [x] Filtros básicos
-- [x] Testes unitários
-
-### Critérios de conclusão
-
-- CRUD completo.
-- Validações funcionando.
-- Paginação funcionando.
-- Testes passando.
-
----
-
-## 🚩 Sprint 4 — Transações
-
-### Objetivo
-
-Implementar o núcleo financeiro do sistema.
-
-### Entregas
-
-- [x] Criar Transaction
-- [x] CRUD
-- [x] Atualização automática do saldo
-- [x] Estorno ao excluir
-- [x] Soft Delete
-- [x] Testes unitários
-
-### Critérios de conclusão
-
-- Receitas aumentam saldo.
-- Despesas diminuem saldo.
-- Pendentes não alteram saldo.
-- Exclusão recalcula saldo.
-- Testes passando.
-
----
-
-## 🚩 Sprint 5 — Blindagem da API
-
-### Objetivo
-
-Aumentar a qualidade e a segurança da aplicação.
-
-### Entregas
-
-- [ ] Soft Delete
-- [ ] FluentValidation em todas as funcionalidades
-- [ ] Global Exception Handler
-- [ ] Problem Details
-- [ ] Revisão geral das regras de negócio
-
-### Critérios de conclusão
-
-- Todas as entradas são validadas.
-- Exceções retornam respostas padronizadas.
-- Nenhum endpoint possui validação manual.
-
----
-
-## 🚩 Sprint 6 — Finalização
-
-### Objetivo
-
-Preparar o projeto para publicação.
-
-### Entregas
-
-- [ ] Configurar Scalar
-- [ ] Revisar código
-- [ ] Revisar documentação
-- [ ] Limpeza geral
-- [ ] Revisão final dos testes
-
-### Critérios de conclusão
-
-- Projeto documentado.
-- Código revisado.
-- Testes passando.
-- API pronta para publicação.
-
----
-
-# 📖 Regra do Projeto
-
-Antes de iniciar a próxima Sprint, a Sprint atual deve estar completamente finalizada.
-
-Uma Sprint só é considerada concluída quando:
-
-- ✅ Funcionalidade implementada
-- ✅ Regras de negócio atendidas
-- ✅ Validações implementadas
-- ✅ Testes da Sprint aprovados
-- ✅ Código revisado
+- Atualizar uma transação paga remove o efeito anterior e aplica o novo.
+- Excluir uma transação paga estorna seu efeito no saldo.
+- Exclusões de contas, categorias e transações são lógicas.
+
+## Tratamento de erros
+
+Erros são convertidos em respostas Problem Details. Erros de validação retornam
+`ValidationProblemDetails`, com mensagens associadas às propriedades inválidas.
+
+| Condição | HTTP |
+|----------|------|
+| Validação ou argumento inválido | 400 |
+| Credenciais inválidas | 401 |
+| Entidade não encontrada | 404 |
+| Conflito de persistência | 409 |
+| Erro inesperado | 500 |
+
+## Testes e build
+
+Execute na raiz do repositório:
+
+```bash
+dotnet test
+dotnet build
+```
+
+## Convenção de commits
+
+O histórico do projeto usa mensagens no formato Conventional Commits, com o tipo,
+uma área opcional e uma descrição da alteração. Exemplos alinhados às alterações do
+projeto:
+
+```text
+feat(transactions): implement transaction balance updates
+fix(categories): allow keeping the category name on update
+test(api): cover global exception handler
+docs(api): document local setup and endpoints
+```

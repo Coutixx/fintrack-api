@@ -5,6 +5,12 @@ using MediatR;
 
 namespace FinTrack.Application.Features.Categories;
 
+public record UpdateCategoryRequest(
+    string Name,
+    TransactionType Type,
+    string Color
+);
+
 public record UpdateCategoryCommand(
     Guid Id,
     string Name,
@@ -26,13 +32,18 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("O nome da categoria é obrigatório.")
             .MaximumLength(100).WithMessage("O nome da categoria pode ter no máximo 100 caracteres.")
-            .MustAsync(async (name, cancellation) =>
+            .MustAsync(async (command, name, cancellation) =>
             {
                 var userId = userContext.UserId;
-                return !await categoryRepository.ExistingByNameAsync(userId, name, cancellation);
-            });
+                return !await categoryRepository.ExistingByNameAsync(
+                    userId,
+                    name,
+                    cancellation,
+                    command.Id);
+            })
+            .WithMessage("Já existe uma categoria com esse nome.");
         RuleFor(x => x.Type)
-            .IsInEnum().WithMessage("O tipo de é inválido.");
+            .IsInEnum().WithMessage("O tipo da categoria é inválido.");
         RuleFor(x => x.Color)
             .NotEmpty().WithMessage("A cor da categoria é obrigatória.")
             .MaximumLength(50).WithMessage("A cor da categoria pode ter no máximo 50 caracteres.");

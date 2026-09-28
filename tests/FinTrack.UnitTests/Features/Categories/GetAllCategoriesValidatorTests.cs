@@ -45,4 +45,30 @@ public class GetAllCategoriesValidatorTests
         // Assert
         Assert.False(result.IsValid);
     }
+
+    [Fact]
+    public void Validate_WhenPageIsZero_ReturnsValidationError()
+    {
+        // Arrange
+        var request = new GetAllCategoriesQuery(Page: 0);
+
+        // Act
+        var result = _validator.Validate(request);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_WhenPageSizeExceedsMaximum_ReturnsValidationError()
+    {
+        // Arrange
+        var request = new GetAllCategoriesQuery(PageSize: 101);
+
+        // Act
+        var result = _validator.Validate(request);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
 }

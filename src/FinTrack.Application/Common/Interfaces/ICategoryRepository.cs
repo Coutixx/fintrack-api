@@ -10,9 +10,18 @@ public interface ICategoryRepository
 
     Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 
-    Task<List<CategoryItem>> GetAllAsync(Guid userId, TransactionType? type, CancellationToken cancellationToken);
+    Task<CategoryPage> GetAllAsync(
+        Guid userId,
+        TransactionType? type,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 
-    Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken);
+    Task<bool> ExistingByNameAsync(
+        Guid userId,
+        string name,
+        CancellationToken cancellationToken,
+        Guid? excludedCategoryId = null);
 }

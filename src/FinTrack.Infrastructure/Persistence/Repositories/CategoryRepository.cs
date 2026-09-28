@@ -18,24 +18,47 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
 
-    public Task<List<CategoryItem>> GetAllAsync(Guid userId, TransactionType? type, CancellationToken cancellationToken)
+    public async Task<CategoryPage> GetAllAsync(
+        Guid userId,
+        TransactionType? type,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken)
     {
-        var query = context.Categories.AsNoTracking().Where(a => a.UserId == userId);
+        var query = context.Categories.AsNoTracking().Where(category => category.UserId == userId);
 
-        if (type.HasValue) query = query.Where(c => c.Type == type);
+        if (type.HasValue) query = query.Where(category => category.Type == type);
 
-        return query.Select(a => new CategoryItem(
-            a.Id,
-            a.Name,
-            a.Type,
-            a.Color
-        )).Take(10).ToListAsync(cancellationToken);
+        var totalCount = await query.CountAsync(cancellationToken);
+        var skip = (int)Math.Min((long)(page - 1) * pageSize, int.MaxValue);
+        var categories = await query
+            .OrderBy(category => category.Name)
+            .ThenBy(category => category.Id)
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(category => new CategoryItem(
+                category.Id,
+                category.Name,
+                category.Type,
+                category.Color))
+            .ToListAsync(cancellationToken);
+
+        return new CategoryPage(categories, totalCount);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
         await context.SaveChangesAsync(cancellationToken);
 
-    public async Task<bool> ExistingByNameAsync(Guid userId, string name, CancellationToken cancellationToken) =>
-        await context.Categories.
-            AsNoTracking().AnyAsync(c => c.UserId == userId && c.Name == name, cancellationToken);
+    public async Task<bool> ExistingByNameAsync(
+        Guid userId,
+        string name,
+        CancellationToken cancellationToken,
+        Guid? excludedCategoryId = null) =>
+        await context.Categories
+            .AsNoTracking()
+            .AnyAsync(
+                c => c.UserId == userId &&
+                    c.Name == name &&
+                    (!excludedCategoryId.HasValue || c.Id != excludedCategoryId.Value),
+                cancellationToken);
 }

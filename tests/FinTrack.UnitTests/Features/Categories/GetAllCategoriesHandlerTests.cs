@@ -32,7 +32,8 @@ public class GetAllCategoriesHandlerTests
         var categories = new List<CategoryItem> { category };
 
         _userContext.UserId.Returns(id);
-        _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(categories);
+        _categoryRepository.GetAllAsync(id, type, 1, 10, Arg.Any<CancellationToken>())
+            .Returns(new CategoryPage(categories, 1));
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
@@ -41,6 +42,9 @@ public class GetAllCategoriesHandlerTests
         Assert.NotNull(response);
         Assert.Single(response.Categories);
         Assert.Equal("Conta", response.Categories.First().Name);
+        Assert.Equal(1, response.Page);
+        Assert.Equal(10, response.PageSize);
+        Assert.Equal(1, response.TotalCount);
 
     }
 
@@ -52,7 +56,8 @@ public class GetAllCategoriesHandlerTests
 
         var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
-        _categoryRepository.GetAllAsync(id, type, Arg.Any<CancellationToken>()).Returns(new List<CategoryItem>());
+        _categoryRepository.GetAllAsync(id, type, 1, 10, Arg.Any<CancellationToken>())
+            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
@@ -68,12 +73,14 @@ public class GetAllCategoriesHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         _userContext.UserId.Returns(id);
+        _categoryRepository.GetAllAsync(id, null, 1, 10, CancellationToken.None)
+            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
 
         // Act
         await _handler.Handle(new GetAllCategoriesQuery(), CancellationToken.None);
 
         // Assert
-        await _categoryRepository.Received(1).GetAllAsync(id, null, CancellationToken.None);
+        await _categoryRepository.Received(1).GetAllAsync(id, null, 1, 10, CancellationToken.None);
     }
 
     [Fact]
@@ -83,11 +90,33 @@ public class GetAllCategoriesHandlerTests
         var id = Guid.NewGuid();
         var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
+        _categoryRepository.GetAllAsync(id, type, 1, 10, CancellationToken.None)
+            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
 
         // Act
         await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
 
         // Assert
-        await _categoryRepository.Received(1).GetAllAsync(id, type, CancellationToken.None);
+        await _categoryRepository.Received(1).GetAllAsync(id, type, 1, 10, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task GetAll_WhenPageIsInformed_PassesPageToRepository()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var type = TransactionType.Expense;
+        _userContext.UserId.Returns(userId);
+        _categoryRepository.GetAllAsync(userId, type, 2, 5, CancellationToken.None)
+            .Returns(new CategoryPage(new List<CategoryItem>(), 12));
+
+        // Act
+        var response = await _handler.Handle(new GetAllCategoriesQuery(type, 2, 5), CancellationToken.None);
+
+        // Assert
+        Assert.Equal(2, response.Page);
+        Assert.Equal(5, response.PageSize);
+        Assert.Equal(12, response.TotalCount);
+        await _categoryRepository.Received(1).GetAllAsync(userId, type, 2, 5, CancellationToken.None);
     }
 }

@@ -18,6 +18,10 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
 
+    public Task<Category?> GetByIdIncludingDeletedAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
+        context.Categories.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
+
     public async Task<CategoryPageReadModel> GetAllAsync(
         Guid userId,
         TransactionType? type,

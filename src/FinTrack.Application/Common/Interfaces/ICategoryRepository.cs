@@ -10,6 +10,8 @@ public interface ICategoryRepository
 
     Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 
+    Task<Category?> GetByIdIncludingDeletedAsync(Guid id, Guid userId, CancellationToken cancellationToken);
+
     Task<CategoryPageReadModel> GetAllAsync(
         Guid userId,
         TransactionType? type,

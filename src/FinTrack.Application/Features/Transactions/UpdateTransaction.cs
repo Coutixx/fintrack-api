@@ -61,7 +61,7 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
         var transaction = await transactionRepository.GetByIdAsync(request.Id, userContext.UserId, request.AccountId, cancellationToken)
             ?? throw new KeyNotFoundException("Transação não encontrada.");
 
-        var category = await categoryRepository.GetByIdAsync(transaction.CategoryId, userContext.UserId, cancellationToken)
+        var category = await categoryRepository.GetByIdIncludingDeletedAsync(transaction.CategoryId, userContext.UserId, cancellationToken)
             ?? throw new KeyNotFoundException("Categoria não encontrada.");
 
         var oldAmount = transaction.Amount;

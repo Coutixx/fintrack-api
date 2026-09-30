@@ -53,7 +53,7 @@ public class UpdateTransactionHandlerTests
 
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
-        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _categoryRepository.GetByIdIncludingDeletedAsync(categoryId, userId, CancellationToken.None).Returns(category);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
 
         // Act
@@ -99,7 +99,7 @@ public class UpdateTransactionHandlerTests
 
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
-        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _categoryRepository.GetByIdIncludingDeletedAsync(categoryId, userId, CancellationToken.None).Returns(category);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
 
         // Act
@@ -148,7 +148,7 @@ public class UpdateTransactionHandlerTests
 
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
-        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _categoryRepository.GetByIdIncludingDeletedAsync(categoryId, userId, CancellationToken.None).Returns(category);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
 
         await _handler.Handle(request, CancellationToken.None);

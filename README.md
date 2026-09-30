@@ -35,10 +35,14 @@ O código é separado por responsabilidades e organizado por funcionalidade:
 | `FinTrack.Application` | Casos de uso MediatR, validações e interfaces |
 | `FinTrack.Infrastructure` | Persistência EF Core, repositórios, autenticação e serviços externos |
 | `FinTrack.Api` | Controllers, configuração da aplicação, OpenAPI e tratamento global de exceções |
-| `FinTrack.UnitTests` | Testes unitários dos handlers, validators e tratamento de exceções |
+| `FinTrack.UnitTests` | Testes unitários e testes de persistência com EF Core InMemory |
 
 As migrations do Entity Framework ficam em
 `src/FinTrack.Infrastructure/Migrations`.
+
+Os repositórios registram as alterações no `AppDbContext`; os handlers confirmam cada
+operação com `IUnitOfWork`. Assim, mudanças relacionadas — como saldo e transação — são
+persistidas juntas em um único `SaveChangesAsync`.
 
 ## Configuração e execução local
 
@@ -214,6 +218,9 @@ Os enums são representados por valores numéricos nas requisições:
 - Atualizar uma transação paga remove o efeito anterior e aplica o novo.
 - Excluir uma transação paga estorna seu efeito no saldo.
 - Exclusões de contas, categorias e transações são lógicas.
+- Transações de contas excluídas logicamente não aparecem nas consultas normais.
+- Uma categoria excluída não apaga o histórico: transações existentes continuam listadas
+  e podem ser atualizadas usando o tipo registrado na categoria original.
 
 ## Tratamento de erros
 
@@ -236,6 +243,10 @@ Execute na raiz do repositório:
 dotnet test
 dotnet build
 ```
+
+Os testes EF Core InMemory verificam os filtros de exclusão lógica e a persistência
+conjunta de saldo e transação. Eles não substituem a aplicação da migration no PostgreSQL;
+aplique-a ao banco local com `dotnet ef database update` após atualizar o projeto.
 
 ## Convenção de commits
 

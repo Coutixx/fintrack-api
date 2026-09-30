@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Features.Categories;
 using FinTrack.Application.Features.Transactions;
 using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
@@ -129,6 +130,45 @@ public class PersistenceIntegrationTests
 
         Assert.Equal(0, persistedAccount.CurrentBalance);
         Assert.Equal(TransactionStatus.Paid, persistedTransaction.Status);
+    }
+
+    [Fact]
+    public async Task UpdateCategory_RejectsTypeChangeWhenOnlySoftDeletedTransactionIsLinked()
+    {
+        var options = CreateOptions();
+        await using var context = new AppDbContext(options);
+        var user = CreateUser();
+        var account = CreateAccount(user);
+        var category = CreateCategory(user);
+        var originalCategoryName = category.Name;
+        var deletedTransaction = CreateTransaction(
+            account,
+            category,
+            deleted: true);
+        await context.AddRangeAsync(user, account, category, deletedTransaction);
+        await context.SaveChangesAsync();
+
+        var userContext = Substitute.For<IUserContext>();
+        userContext.UserId.Returns(user.Id);
+        var handler = new UpdateCategoryHandler(
+            new CategoryRepository(context),
+            context,
+            userContext);
+
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+            handler.Handle(
+                new UpdateCategoryCommand(
+                    category.Id,
+                    "New category name",
+                    TransactionType.Income,
+                    "#ffffff"),
+                CancellationToken.None));
+
+        Assert.Equal(
+            "Não é possível alterar o tipo da categoria porque existem transações vinculadas.",
+            exception.Message);
+        Assert.Equal(TransactionType.Expense, category.Type);
+        Assert.Equal(originalCategoryName, category.Name);
     }
 
     private static DbContextOptions<AppDbContext> CreateOptions() =>

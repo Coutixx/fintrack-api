@@ -62,4 +62,9 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
                     c.Name == name &&
                     (!excludedCategoryId.HasValue || c.Id != excludedCategoryId.Value),
                 cancellationToken);
+
+    public Task<bool> HasTransactionsAsync(Guid categoryId, CancellationToken cancellationToken) =>
+        context.Transactions
+            .IgnoreQueryFilters()
+            .AnyAsync(transaction => transaction.CategoryId == categoryId, cancellationToken);
 }

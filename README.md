@@ -212,6 +212,8 @@ Os enums são representados por valores numéricos nas requisições:
 - O saldo inicial da conta não pode ser negativo; se omitido, começa em zero.
 - Categorias não podem ter nomes duplicados para o mesmo usuário.
 - O tipo da transação deve corresponder ao tipo de sua categoria.
+- O tipo de uma categoria não pode ser alterado quando houver transações vinculadas,
+  inclusive excluídas logicamente; nome e cor continuam editáveis.
 - O valor da transação deve ser maior que zero.
 - Transações pagas atualizam o saldo: receitas somam e despesas subtraem.
 - Transações pendentes não alteram o saldo.

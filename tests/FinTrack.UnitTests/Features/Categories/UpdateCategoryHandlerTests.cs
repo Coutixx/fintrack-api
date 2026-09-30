@@ -35,7 +35,6 @@ public class UpdateCategoryHandlerTests
         };
         _userContext.UserId.Returns(userId);
         _categoryRepository.GetByIdAsync(id, userId, CancellationToken.None).Returns(existingCategory);
-
         // Act
         var response = await _handler.Handle(new UpdateCategoryCommand(
             id,
@@ -49,7 +48,67 @@ public class UpdateCategoryHandlerTests
         Assert.Equal(TransactionType.Income, response.Type);
         Assert.Equal("Cor Nova", response.Color);
         Assert.Equal(id, response.Id);
+        await _categoryRepository.DidNotReceive().HasTransactionsAsync(id, CancellationToken.None);
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenChangingTypeWithLinkedTransactions_ThrowsAndDoesNotSave()
+    {
+        var id = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var existingCategory = new Category
+        {
+            Id = id,
+            UserId = userId,
+            Name = "Nome Antigo",
+            Type = TransactionType.Income,
+            Color = "Cor Antiga"
+        };
+        _userContext.UserId.Returns(userId);
+        _categoryRepository.GetByIdAsync(id, userId, CancellationToken.None).Returns(existingCategory);
+        _categoryRepository.HasTransactionsAsync(id, CancellationToken.None).Returns(true);
+
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+            _handler.Handle(
+                new UpdateCategoryCommand(id, "Nome Novo", TransactionType.Expense, "Cor Nova"),
+                CancellationToken.None));
+
+        Assert.Equal(
+            "Não é possível alterar o tipo da categoria porque existem transações vinculadas.",
+            exception.Message);
+        Assert.Equal("Nome Antigo", existingCategory.Name);
+        Assert.Equal(TransactionType.Income, existingCategory.Type);
+        Assert.Equal("Cor Antiga", existingCategory.Color);
+        await _categoryRepository.Received(1).HasTransactionsAsync(id, CancellationToken.None);
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_WhenChangingTypeWithoutTransactions_UpdatesCategory()
+    {
+        var id = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var existingCategory = new Category
+        {
+            Id = id,
+            UserId = userId,
+            Name = "Nome",
+            Type = TransactionType.Income,
+            Color = "Azul"
+        };
+        _userContext.UserId.Returns(userId);
+        _categoryRepository.GetByIdAsync(id, userId, CancellationToken.None).Returns(existingCategory);
+        _categoryRepository.HasTransactionsAsync(id, CancellationToken.None).Returns(false);
+
+        var response = await _handler.Handle(
+            new UpdateCategoryCommand(id, "Nome", TransactionType.Expense, "Vermelho"),
+            CancellationToken.None);
+
+        Assert.Equal(TransactionType.Expense, response.Type);
+        Assert.Equal("Vermelho", response.Color);
+        await _categoryRepository.Received(1).HasTransactionsAsync(id, CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]

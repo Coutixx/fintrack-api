@@ -24,4 +24,6 @@ public interface ICategoryRepository
         string name,
         CancellationToken cancellationToken,
         Guid? excludedCategoryId = null);
+
+    Task<bool> HasTransactionsAsync(Guid categoryId, CancellationToken cancellationToken);
 }

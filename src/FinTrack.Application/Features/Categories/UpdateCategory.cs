@@ -57,6 +57,12 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUnit
         var category = await categoryRepository.GetByIdAsync(request.Id, userContext.UserId, cancellationToken)
             ?? throw new KeyNotFoundException($"Categoria não encontrada.");
 
+        if (category.Type != request.Type &&
+            await categoryRepository.HasTransactionsAsync(category.Id, cancellationToken))
+        {
+            throw new ArgumentException("Não é possível alterar o tipo da categoria porque existem transações vinculadas.");
+        }
+
         category.Name = request.Name;
         category.Type = request.Type;
         category.Color = request.Color;

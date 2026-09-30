@@ -31,7 +31,7 @@ public class CreateTransactionHandlerTests
             "Fatura",
             234.8m,
             TransactionType.Income,
-            new DateTime(2026, 09, 09),
+            new DateOnly(2026, 09, 09),
             TransactionStatus.Paid
         );
         var account = new Account
@@ -82,7 +82,7 @@ public class CreateTransactionHandlerTests
             "Salário",
             200,
             TransactionType.Income,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Paid);
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
@@ -110,7 +110,7 @@ public class CreateTransactionHandlerTests
             "Aluguel",
             200,
             TransactionType.Expense,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Paid);
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
@@ -138,7 +138,7 @@ public class CreateTransactionHandlerTests
             "Receita futura",
             200,
             TransactionType.Income,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Pending);
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
@@ -166,7 +166,7 @@ public class CreateTransactionHandlerTests
             "Incompatível",
             200,
             TransactionType.Income,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Paid);
         _userContext.UserId.Returns(userId);
         _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);

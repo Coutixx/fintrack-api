@@ -29,7 +29,7 @@ public class GetByIdTransactionHandlerTests
             Description = "Salário",
             Amount = 100,
             Type = TransactionType.Income,
-            Date = new DateTime(2026, 09, 10),
+            Date = new DateOnly(2026, 09, 10),
             Status = TransactionStatus.Paid
         };
         _userContext.UserId.Returns(userId);

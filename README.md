@@ -183,6 +183,9 @@ logicamente.
 | `Category` | `Name`, `Type`, `Color`, `UserId` | Pertence a um usuário; classifica transações |
 | `Transaction` | `Description`, `Amount`, `Type`, `Date`, `Status`, `AccountId`, `CategoryId` | Pertence a uma conta e categoria |
 
+`Transaction.Date` representa somente uma data de calendário, sem horário ou fuso.
+Envie e receba a data no formato ISO `yyyy-MM-dd` (por exemplo, `2026-09-30`).
+
 ### Enums
 
 Os enums são representados por valores numéricos nas requisições:

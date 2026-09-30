@@ -12,7 +12,7 @@ public record CreateTransactionRequest(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 );
 
@@ -22,7 +22,7 @@ public record CreateTransactionCommand(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 ) : IRequest<CreateTransactionResponse>;
 

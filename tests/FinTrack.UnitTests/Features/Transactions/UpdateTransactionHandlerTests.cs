@@ -27,7 +27,7 @@ public class UpdateTransactionHandlerTests
         var accountId = Guid.NewGuid();
         var categoryId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var date = new DateTime(2026, 09, 10);
+        var date = new DateOnly(2026, 09, 10);
         var transaction = new Transaction
         {
             Id = id,
@@ -93,7 +93,7 @@ public class UpdateTransactionHandlerTests
             "Despesa",
             50,
             TransactionType.Expense,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Paid);
 
         _userContext.UserId.Returns(userId);
@@ -129,7 +129,7 @@ public class UpdateTransactionHandlerTests
                     "Descrição",
                     100,
                     TransactionType.Income,
-                    DateTime.UtcNow,
+                    new DateOnly(2026, 09, 10),
                     TransactionStatus.Paid),
                 CancellationToken.None));
         await _transactionRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());

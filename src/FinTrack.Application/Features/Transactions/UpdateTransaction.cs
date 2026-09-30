@@ -10,7 +10,7 @@ public record UpdateTransactionRequest(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 );
 public record UpdateTransactionCommand(
@@ -19,7 +19,7 @@ public record UpdateTransactionCommand(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 ) : IRequest<UpdateTransactionResponse>;
 
@@ -28,7 +28,7 @@ public record UpdateTransactionResponse(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 );
 

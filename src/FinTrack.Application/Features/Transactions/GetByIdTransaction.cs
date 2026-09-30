@@ -12,7 +12,7 @@ public record GetByIdTransactionResponse(
     string Description,
     decimal Amount,
     TransactionType Type,
-    DateTime Date,
+    DateOnly Date,
     TransactionStatus Status
 );
 

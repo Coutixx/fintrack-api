@@ -25,7 +25,7 @@ public class GetAllTransactionsHandlerTests
             "Salário",
             100,
             TransactionType.Income,
-            DateTime.UtcNow,
+            new DateOnly(2026, 09, 10),
             TransactionStatus.Paid);
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetAllAsync(userId, null, null, CancellationToken.None)

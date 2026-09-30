@@ -64,9 +64,13 @@ Configure no `.env`:
 
 - `POSTGRES_USER`, `POSTGRES_DB` e `POSTGRES_PASSWORD` para o container PostgreSQL.
 - `ConnectionStrings__PostgresConnection` com os mesmos dados de conexão.
-- `JwtSettings__SECRET` com uma chave secreta forte para assinatura dos tokens JWT.
+- `JwtSettings__SECRET` com uma chave secreta aleatória de pelo menos 32 bytes UTF-8.
+- `JwtSettings__Issuer`, `JwtSettings__Audience` e `JwtSettings__ExpirationHours` para
+  identificação do emissor, público e duração dos tokens JWT.
 
 O arquivo `.env` é ignorado pelo Git. Não versione segredos ou credenciais.
+O exemplo configura emissor `FinTrack.Api`, público `FinTrack.Client` e duração de uma
+hora; personalize esses valores conforme o ambiente.
 
 Inicie o PostgreSQL:
 

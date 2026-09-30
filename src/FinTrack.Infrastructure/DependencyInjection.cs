@@ -1,4 +1,3 @@
-using System.Text;
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Infrastructure.Data;
 using FinTrack.Infrastructure.Persistence.Repositories;
@@ -21,9 +20,7 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
 
-        var secret = configuration["JwtSettings:SECRET"]
-            ?? throw new InvalidOperationException("Secret JWT não configurada.");
-        var key = Encoding.ASCII.GetBytes(secret);
+        var jwtSettings = JwtSettings.Load(configuration);
 
         services.AddAuthentication(x =>
         {
@@ -32,14 +29,16 @@ public static class DependencyInjection
         })
         .AddJwtBearer(x =>
         {
-            x.RequireHttpsMetadata = false;
+            x.RequireHttpsMetadata = true;
             x.SaveToken = true;
             x.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
+                IssuerSigningKey = new SymmetricSecurityKey(jwtSettings.SigningKey),
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = jwtSettings.Audience,
                 ClockSkew = TimeSpan.Zero
             };
         });

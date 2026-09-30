@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Application.Features.Accounts;
 using FinTrack.Domain.Enums;
 using NSubstitute;
@@ -20,13 +21,13 @@ public class GetAllAccountsHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var account = new AccountItem(
+        var account = new AccountReadModel(
             id,
             "Conta",
             AccountType.Checking,
             2332
         );
-        var accounts = new List<AccountItem> { account };
+        var accounts = new List<AccountReadModel> { account };
 
         _userContext.UserId.Returns(userId);
         _accountRepository.GetAllAsync(userId, Arg.Any<CancellationToken>()).Returns(accounts);
@@ -47,7 +48,7 @@ public class GetAllAccountsHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         _userContext.UserId.Returns(id);
-        _accountRepository.GetAllAsync(id, Arg.Any<CancellationToken>()).Returns(new List<AccountItem>());
+        _accountRepository.GetAllAsync(id, Arg.Any<CancellationToken>()).Returns(new List<AccountReadModel>());
 
         // Act
         var response = await _handler.Handle(new GetAllAccountsQuery(), CancellationToken.None);
@@ -63,6 +64,7 @@ public class GetAllAccountsHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         _userContext.UserId.Returns(id);
+        _accountRepository.GetAllAsync(id, CancellationToken.None).Returns(new List<AccountReadModel>());
 
         // Act
         await _handler.Handle(new GetAllAccountsQuery(), CancellationToken.None);

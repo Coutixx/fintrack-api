@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Domain.Enums;
 using NSubstitute;
@@ -23,17 +24,17 @@ public class GetAllCategoriesHandlerTests
         var id = Guid.NewGuid();
         var userId = Guid.NewGuid();
         var type = TransactionType.Income;
-        var category = new CategoryItem(
+        var category = new CategoryReadModel(
             id,
             "Conta",
             type,
             "Preto"
         );
-        var categories = new List<CategoryItem> { category };
+        var categories = new List<CategoryReadModel> { category };
 
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, type, 1, 10, Arg.Any<CancellationToken>())
-            .Returns(new CategoryPage(categories, 1));
+            .Returns(new CategoryPageReadModel(categories, 1));
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
@@ -57,7 +58,7 @@ public class GetAllCategoriesHandlerTests
         var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, type, 1, 10, Arg.Any<CancellationToken>())
-            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
+            .Returns(new CategoryPageReadModel(new List<CategoryReadModel>(), 0));
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
@@ -74,7 +75,7 @@ public class GetAllCategoriesHandlerTests
         var id = Guid.NewGuid();
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, null, 1, 10, CancellationToken.None)
-            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
+            .Returns(new CategoryPageReadModel(new List<CategoryReadModel>(), 0));
 
         // Act
         await _handler.Handle(new GetAllCategoriesQuery(), CancellationToken.None);
@@ -91,7 +92,7 @@ public class GetAllCategoriesHandlerTests
         var type = TransactionType.Income;
         _userContext.UserId.Returns(id);
         _categoryRepository.GetAllAsync(id, type, 1, 10, CancellationToken.None)
-            .Returns(new CategoryPage(new List<CategoryItem>(), 0));
+            .Returns(new CategoryPageReadModel(new List<CategoryReadModel>(), 0));
 
         // Act
         await _handler.Handle(new GetAllCategoriesQuery(type), CancellationToken.None);
@@ -108,7 +109,7 @@ public class GetAllCategoriesHandlerTests
         var type = TransactionType.Expense;
         _userContext.UserId.Returns(userId);
         _categoryRepository.GetAllAsync(userId, type, 2, 5, CancellationToken.None)
-            .Returns(new CategoryPage(new List<CategoryItem>(), 12));
+            .Returns(new CategoryPageReadModel(new List<CategoryReadModel>(), 12));
 
         // Act
         var response = await _handler.Handle(new GetAllCategoriesQuery(type, 2, 5), CancellationToken.None);

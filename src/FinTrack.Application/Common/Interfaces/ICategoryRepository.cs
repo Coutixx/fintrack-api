@@ -1,4 +1,4 @@
-using FinTrack.Application.Features.Categories;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 
@@ -10,7 +10,7 @@ public interface ICategoryRepository
 
     Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 
-    Task<CategoryPage> GetAllAsync(
+    Task<CategoryPageReadModel> GetAllAsync(
         Guid userId,
         TransactionType? type,
         int page,

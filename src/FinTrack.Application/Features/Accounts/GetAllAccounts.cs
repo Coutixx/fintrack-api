@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Enums;
 using MediatR;
 
@@ -20,6 +21,10 @@ public class GetAllAccountsHandler(IAccountRepository accountRepository, IUserCo
     {
         var accounts = await accountRepository.GetAllAsync(userContext.UserId, cancellationToken);
 
-        return new GetAllAccountsResponse(accounts);
+        return new GetAllAccountsResponse(accounts.Select(account => new AccountItem(
+            account.Id,
+            account.Name,
+            account.Type,
+            account.CurrentBalance)).ToList());
     }
 }

@@ -1,5 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Accounts;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Entities;
 using FinTrack.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +17,8 @@ public class AccountRepository(AppDbContext context) : IAccountRepository
     public Task<Account?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
 
-    public Task<List<AccountItem>> GetAllAsync(Guid userId, CancellationToken cancellationToken) =>
-        context.Accounts.AsNoTracking().Where(a => a.UserId == userId).Select(a => new AccountItem(
+    public Task<List<AccountReadModel>> GetAllAsync(Guid userId, CancellationToken cancellationToken) =>
+        context.Accounts.AsNoTracking().Where(a => a.UserId == userId).Select(a => new AccountReadModel(
             a.Id,
             a.Name,
             a.Type,

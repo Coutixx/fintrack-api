@@ -1,5 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Categories;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 using FinTrack.Infrastructure.Data;
@@ -18,7 +18,7 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
         context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken);
 
-    public async Task<CategoryPage> GetAllAsync(
+    public async Task<CategoryPageReadModel> GetAllAsync(
         Guid userId,
         TransactionType? type,
         int page,
@@ -36,14 +36,14 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
             .ThenBy(category => category.Id)
             .Skip(skip)
             .Take(pageSize)
-            .Select(category => new CategoryItem(
+            .Select(category => new CategoryReadModel(
                 category.Id,
                 category.Name,
                 category.Type,
                 category.Color))
             .ToListAsync(cancellationToken);
 
-        return new CategoryPage(categories, totalCount);
+        return new CategoryPageReadModel(categories, totalCount);
     }
 
     public async Task<bool> ExistingByNameAsync(

@@ -1,5 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Accounts.Services;
+using FinTrack.Application.Common.Services;
 using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;

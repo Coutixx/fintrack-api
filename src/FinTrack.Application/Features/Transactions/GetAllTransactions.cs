@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
@@ -38,6 +39,12 @@ public class GetAllTransactionsHandler(ITransactionRepository transactionReposit
     {
         var transactions = await transactionRepository.GetAllAsync(userContext.UserId, request.AccountId, request.Type, cancellationToken);
 
-        return new GetAllTransactionsResponse(transactions);
+        return new GetAllTransactionsResponse(transactions.Select(transaction => new TransactionItem(
+            transaction.Id,
+            transaction.Description,
+            transaction.Amount,
+            transaction.Type,
+            transaction.Date,
+            transaction.Status)).ToList());
     }
 }

@@ -1,6 +1,6 @@
 using FinTrack.Domain.Enums;
 
-namespace FinTrack.Application.Features.Accounts.Services;
+namespace FinTrack.Application.Common.Services;
 
 public static class AccountBalanceCalculator
 {

@@ -1,5 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
-using FinTrack.Application.Features.Transactions;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 using FinTrack.Infrastructure.Data;
@@ -18,7 +18,7 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
     public Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken) =>
         context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.Account.UserId == userId && t.AccountId == accountId, cancellationToken);
 
-    public async Task<List<TransactionItem>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken)
+    public async Task<List<TransactionReadModel>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken)
     {
         var query = context.Transactions.AsNoTracking().Where(t => t.Account.UserId == userId);
 
@@ -26,7 +26,7 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
 
         if (type.HasValue) query = query.Where(t => t.Type == type);
 
-        return await query.Select(a => new TransactionItem(
+        return await query.Select(a => new TransactionReadModel(
             a.Id,
             a.Description,
             a.Amount,

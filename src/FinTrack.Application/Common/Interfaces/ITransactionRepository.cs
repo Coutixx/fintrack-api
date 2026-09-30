@@ -1,4 +1,4 @@
-using FinTrack.Application.Features.Transactions;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Entities;
 using FinTrack.Domain.Enums;
 
@@ -10,6 +10,6 @@ public interface ITransactionRepository
 
     Task<Transaction?> GetByIdAsync(Guid id, Guid userId, Guid accountId, CancellationToken cancellationToken);
 
-    Task<List<TransactionItem>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken);
+    Task<List<TransactionReadModel>> GetAllAsync(Guid userId, Guid? accountId, TransactionType? type, CancellationToken cancellationToken);
 
 }

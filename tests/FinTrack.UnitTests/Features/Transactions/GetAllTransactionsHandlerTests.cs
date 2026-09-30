@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Application.Features.Transactions;
 using FinTrack.Domain.Enums;
 using NSubstitute;
@@ -20,7 +21,7 @@ public class GetAllTransactionsHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var transaction = new TransactionItem(
+        var transaction = new TransactionReadModel(
             Guid.NewGuid(),
             "Salário",
             100,
@@ -29,7 +30,7 @@ public class GetAllTransactionsHandlerTests
             TransactionStatus.Paid);
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetAllAsync(userId, null, null, CancellationToken.None)
-            .Returns(new List<TransactionItem> { transaction });
+            .Returns(new List<TransactionReadModel> { transaction });
 
         // Act
         var response = await _handler.Handle(new GetAllTransactionsQuery(), CancellationToken.None);
@@ -47,7 +48,7 @@ public class GetAllTransactionsHandlerTests
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
         _transactionRepository.GetAllAsync(userId, null, null, CancellationToken.None)
-            .Returns(new List<TransactionItem>());
+            .Returns(new List<TransactionReadModel>());
 
         // Act
         var response = await _handler.Handle(new GetAllTransactionsQuery(), CancellationToken.None);
@@ -63,6 +64,8 @@ public class GetAllTransactionsHandlerTests
         // Arrange
         var userId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
+        _transactionRepository.GetAllAsync(userId, null, null, CancellationToken.None)
+            .Returns(new List<TransactionReadModel>());
 
         // Act
         await _handler.Handle(new GetAllTransactionsQuery(), CancellationToken.None);
@@ -78,6 +81,8 @@ public class GetAllTransactionsHandlerTests
         var userId = Guid.NewGuid();
         var accountId = Guid.NewGuid();
         _userContext.UserId.Returns(userId);
+        _transactionRepository.GetAllAsync(userId, accountId, null, CancellationToken.None)
+            .Returns(new List<TransactionReadModel>());
 
         // Act
         await _handler.Handle(new GetAllTransactionsQuery(accountId), CancellationToken.None);
@@ -93,6 +98,8 @@ public class GetAllTransactionsHandlerTests
         var userId = Guid.NewGuid();
         var type = TransactionType.Income;
         _userContext.UserId.Returns(userId);
+        _transactionRepository.GetAllAsync(userId, null, type, CancellationToken.None)
+            .Returns(new List<TransactionReadModel>());
 
         // Act
         await _handler.Handle(new GetAllTransactionsQuery(null, type), CancellationToken.None);

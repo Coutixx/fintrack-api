@@ -1,4 +1,5 @@
 using FinTrack.Application.Common.Interfaces;
+using FinTrack.Application.Common.Models;
 using FinTrack.Domain.Enums;
 using FluentValidation;
 using MediatR;
@@ -54,7 +55,11 @@ public class GetAllCategoriesHandler(ICategoryRepository categoryRepository, IUs
             cancellationToken);
 
         return new GetAllCategoriesResponse(
-            categories.Categories,
+            categories.Categories.Select(category => new CategoryItem(
+                category.Id,
+                category.Name,
+                category.Type,
+                category.Color)).ToList(),
             request.Page,
             request.PageSize,
             categories.TotalCount);

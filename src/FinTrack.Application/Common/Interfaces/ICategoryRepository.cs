@@ -17,8 +17,6 @@ public interface ICategoryRepository
         int pageSize,
         CancellationToken cancellationToken);
 
-    Task SaveChangesAsync(CancellationToken cancellationToken);
-
     Task<bool> ExistingByNameAsync(
         Guid userId,
         string name,

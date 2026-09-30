@@ -15,7 +15,7 @@ public class DeleteCategoryValidator : AbstractValidator<DeleteCategoryCommand>
     }
 }
 
-public class DeleteCategoryHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<DeleteCategoryCommand, Unit>
+public class DeleteCategoryHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<DeleteCategoryCommand, Unit>
 {
     public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class DeleteCategoryHandler(ICategoryRepository categoryRepository, IUser
 
         category.DeletedAt = DateTime.UtcNow;
 
-        await categoryRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }
 }

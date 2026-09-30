@@ -8,12 +8,13 @@ namespace FinTrack.UnitTests.Features.Auth.Register;
 public class RegisterHandlerTests
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
     private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
     private readonly RegisterHandler _handler;
 
     public RegisterHandlerTests() =>
-        _handler = new RegisterHandler(_userRepository, _tokenService, _passwordHasher);
+        _handler = new RegisterHandler(_userRepository, _unitOfWork, _tokenService, _passwordHasher);
 
     [Fact]
     public async Task Handle_ValidRequest_ShouldCreateUser()
@@ -50,6 +51,7 @@ public class RegisterHandlerTests
             u.PasswordHash != string.Empty &&
             u.CreatedAt <= DateTime.UtcNow
         ), CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
         _tokenService.Received(1).GenerateToken(Arg.Any<User>());
     }
 

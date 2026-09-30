@@ -10,13 +10,14 @@ namespace FinTrack.UnitTests.Features.Categories;
 public class UpdateCategoryHandlerTests
 {
     private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     private readonly UpdateCategoryHandler _handler;
 
     public UpdateCategoryHandlerTests() =>
-        _handler = new UpdateCategoryHandler(_categoryRepository, _userContext);
+        _handler = new UpdateCategoryHandler(_categoryRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_ValidRequest_UpdatesCategory()
@@ -48,7 +49,7 @@ public class UpdateCategoryHandlerTests
         Assert.Equal(TransactionType.Income, response.Type);
         Assert.Equal("Cor Nova", response.Color);
         Assert.Equal(id, response.Id);
-        await _categoryRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

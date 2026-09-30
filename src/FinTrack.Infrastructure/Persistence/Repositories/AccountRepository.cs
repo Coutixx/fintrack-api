@@ -8,10 +8,10 @@ namespace FinTrack.Infrastructure.Persistence.Repositories;
 
 public class AccountRepository(AppDbContext context) : IAccountRepository
 {
-    public async Task AddAsync(Account account, CancellationToken cancellationToken)
+    public Task AddAsync(Account account, CancellationToken cancellationToken)
     {
         context.Accounts.Add(account);
-        await context.SaveChangesAsync(cancellationToken);
+        return Task.CompletedTask;
     }
 
     public Task<Account?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
@@ -26,6 +26,4 @@ public class AccountRepository(AppDbContext context) : IAccountRepository
         ))
         .ToListAsync(cancellationToken);
 
-    public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
-        await context.SaveChangesAsync(cancellationToken);
 }

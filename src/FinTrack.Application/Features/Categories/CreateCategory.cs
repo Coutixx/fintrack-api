@@ -35,7 +35,7 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
     }
 }
 
-public class CreateCategoryHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<CreateCategoryCommand, CreateCategoryResponse>
+public class CreateCategoryHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<CreateCategoryCommand, CreateCategoryResponse>
 {
 
     public async Task<CreateCategoryResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -51,6 +51,7 @@ public class CreateCategoryHandler(ICategoryRepository categoryRepository, IUser
         };
 
         await categoryRepository.AddAsync(category, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return new CreateCategoryResponse(category.Id);
     }
 }

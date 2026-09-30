@@ -29,7 +29,7 @@ public class CreateAccountValidator : AbstractValidator<CreateAccountCommand>
     }
 }
 
-public class CreateAccountHandler(IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<CreateAccountCommand, CreateAccountResponse>
+public class CreateAccountHandler(IAccountRepository accountRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<CreateAccountCommand, CreateAccountResponse>
 {
 
     public async Task<CreateAccountResponse> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -46,6 +46,7 @@ public class CreateAccountHandler(IAccountRepository accountRepository, IUserCon
         };
 
         await accountRepository.AddAsync(account, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return new CreateAccountResponse(account.Id);
     }
 }

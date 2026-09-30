@@ -35,7 +35,7 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountCommand>
     }
 }
 
-public class UpdateAccountHandler(IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<UpdateAccountCommand, UpdateAccountResponse>
+public class UpdateAccountHandler(IAccountRepository accountRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<UpdateAccountCommand, UpdateAccountResponse>
 {
     public async Task<UpdateAccountResponse> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
     {
@@ -46,7 +46,7 @@ public class UpdateAccountHandler(IAccountRepository accountRepository, IUserCon
         account.Type = request.Type;
         account.UpdatedAt = DateTime.UtcNow;
 
-        await accountRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new UpdateAccountResponse(
         account.Id,

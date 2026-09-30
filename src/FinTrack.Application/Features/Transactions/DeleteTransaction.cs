@@ -19,7 +19,7 @@ public class DeleteTransactionValidator : AbstractValidator<DeleteTransactionCom
     }
 }
 
-public class DeleteTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<DeleteTransactionCommand, Unit>
+public class DeleteTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<DeleteTransactionCommand, Unit>
 {
     public async Task<Unit> Handle(DeleteTransactionCommand request, CancellationToken cancellationToken)
     {
@@ -33,7 +33,7 @@ public class DeleteTransactionHandler(ITransactionRepository transactionReposito
 
         transaction.DeletedAt = DateTime.UtcNow;
 
-        await transactionRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }
 }

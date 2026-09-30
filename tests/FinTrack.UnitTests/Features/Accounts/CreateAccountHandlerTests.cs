@@ -9,11 +9,12 @@ namespace FinTrack.UnitTests.Features.Accounts;
 public class CreateAccountHandlerTests
 {
     private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
     private readonly CreateAccountHandler _handler;
 
     public CreateAccountHandlerTests() =>
-        _handler = new CreateAccountHandler(_accountRepository, _userContext);
+        _handler = new CreateAccountHandler(_accountRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_WhenCommandIsValid_ReturnsAccountId()
@@ -38,6 +39,7 @@ public class CreateAccountHandlerTests
             a.UserId == userId &&
             a.CreatedAt != default
         ), CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]

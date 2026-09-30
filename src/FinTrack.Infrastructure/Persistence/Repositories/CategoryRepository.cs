@@ -9,10 +9,10 @@ namespace FinTrack.Infrastructure.Persistence.Repositories;
 
 public class CategoryRepository(AppDbContext context) : ICategoryRepository
 {
-    public async Task AddAsync(Category category, CancellationToken cancellationToken)
+    public Task AddAsync(Category category, CancellationToken cancellationToken)
     {
         context.Categories.Add(category);
-        await context.SaveChangesAsync(cancellationToken);
+        return Task.CompletedTask;
     }
 
     public Task<Category?> GetByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken) =>
@@ -45,9 +45,6 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
 
         return new CategoryPage(categories, totalCount);
     }
-
-    public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
-        await context.SaveChangesAsync(cancellationToken);
 
     public async Task<bool> ExistingByNameAsync(
         Guid userId,

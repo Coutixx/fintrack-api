@@ -1,9 +1,10 @@
 using FinTrack.Domain.Entities;
+using FinTrack.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinTrack.Infrastructure.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IUnitOfWork
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

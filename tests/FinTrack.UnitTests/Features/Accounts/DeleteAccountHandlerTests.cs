@@ -11,10 +11,11 @@ namespace FinTrack.UnitTests.Features.Accounts;
 public class DeleteAccountHandlerTests
 {
     private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
     private readonly DeleteAccountHandler _handler;
     public DeleteAccountHandlerTests() =>
-        _handler = new DeleteAccountHandler(_accountRepository, _userContext);
+        _handler = new DeleteAccountHandler(_accountRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_ValidRequest_DeletesAccount()
@@ -45,7 +46,7 @@ public class DeleteAccountHandlerTests
         Assert.InRange(existingAccount.DeletedAt.Value,
             DateTime.UtcNow.AddSeconds(-2),
             DateTime.UtcNow.AddSeconds(2));
-        await _accountRepository.Received(1).SaveChangesAsync(CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -64,6 +65,6 @@ public class DeleteAccountHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _handler.Handle(new DeleteAccountCommand(id), CancellationToken.None));
-        await _accountRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

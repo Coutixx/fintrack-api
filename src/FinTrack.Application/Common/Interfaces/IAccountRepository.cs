@@ -11,5 +11,4 @@ public interface IAccountRepository
 
     Task<List<AccountItem>> GetAllAsync(Guid userId, CancellationToken cancellationToken);
 
-    Task SaveChangesAsync(CancellationToken cancellationToken);
 }

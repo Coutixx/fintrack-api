@@ -54,7 +54,7 @@ public class UpdateTransactionValidator : AbstractValidator<UpdateTransactionCom
             .IsInEnum().WithMessage("O status da transação é inválido.");
     }
 }
-public class UpdateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<UpdateTransactionCommand, UpdateTransactionResponse>
+public class UpdateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<UpdateTransactionCommand, UpdateTransactionResponse>
 {
     public async Task<UpdateTransactionResponse> Handle(UpdateTransactionCommand request, CancellationToken cancellationToken)
     {
@@ -92,7 +92,7 @@ public class UpdateTransactionHandler(ITransactionRepository transactionReposito
 
         transaction.UpdatedAt = DateTime.UtcNow;
 
-        await transactionRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new UpdateTransactionResponse(
             transaction.Id,

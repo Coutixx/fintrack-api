@@ -11,12 +11,13 @@ public class CreateTransactionHandlerTests
     private readonly ITransactionRepository _transactionRepository = Substitute.For<ITransactionRepository>();
     IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
     ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     private readonly CreateTransactionHandler _handler;
 
     public CreateTransactionHandlerTests() =>
-        _handler = new CreateTransactionHandler(_transactionRepository, _accountRepository, _categoryRepository, _userContext);
+        _handler = new CreateTransactionHandler(_transactionRepository, _accountRepository, _categoryRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_WhenCommandIsValid_ReturnsTransactionId()
@@ -65,6 +66,7 @@ public class CreateTransactionHandlerTests
         t.Date == request.Date &&
         t.Status == request.Status
         ), CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -176,5 +178,6 @@ public class CreateTransactionHandlerTests
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _handler.Handle(request, CancellationToken.None));
         await _transactionRepository.DidNotReceive().AddAsync(Arg.Any<Transaction>(), CancellationToken.None);
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

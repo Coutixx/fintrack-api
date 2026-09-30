@@ -9,13 +9,14 @@ namespace FinTrack.UnitTests.Features.Categories;
 public class CreateCategoryHandlerTests
 {
     private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     private readonly CreateCategoryHandler _handler;
 
     public CreateCategoryHandlerTests() =>
-        _handler = new CreateCategoryHandler(_categoryRepository, _userContext);
+        _handler = new CreateCategoryHandler(_categoryRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_WhenCommandIsValid_ReturnsCategoryId()
@@ -35,6 +36,7 @@ public class CreateCategoryHandlerTests
             c.Type == request.Type &&
             c.Color == request.Color
         ), CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]

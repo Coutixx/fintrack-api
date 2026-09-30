@@ -12,12 +12,13 @@ public class UpdateTransactionHandlerTests
     private readonly ITransactionRepository _transactionRepository = Substitute.For<ITransactionRepository>();
     private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
     private readonly ICategoryRepository _categoryRepository = Substitute.For<ICategoryRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     private readonly UpdateTransactionHandler _handler;
 
     public UpdateTransactionHandlerTests() =>
-        _handler = new UpdateTransactionHandler(_transactionRepository, _accountRepository, _categoryRepository, _userContext);
+        _handler = new UpdateTransactionHandler(_transactionRepository, _accountRepository, _categoryRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_ValidRequest_UpdatesTransaction()
@@ -65,7 +66,7 @@ public class UpdateTransactionHandlerTests
         Assert.Equal(request.Type, response.Type);
         Assert.Equal(request.Date, response.Date);
         Assert.Equal(request.Status, response.Status);
-        await _transactionRepository.Received(1).SaveChangesAsync(CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -153,7 +154,7 @@ public class UpdateTransactionHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         Assert.Equal(expectedBalance, account.CurrentBalance);
-        await _transactionRepository.Received(1).SaveChangesAsync(CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -180,6 +181,6 @@ public class UpdateTransactionHandlerTests
                     new DateOnly(2026, 09, 10),
                     TransactionStatus.Paid),
                 CancellationToken.None));
-        await _transactionRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

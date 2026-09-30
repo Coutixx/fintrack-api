@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
     configuration.GetConnectionString("PostgresConnection")
     ?? throw new InvalidOperationException("Connection String não configurada.")));
+        services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<AppDbContext>());
 
         services.AddHttpContextAccessor();
 

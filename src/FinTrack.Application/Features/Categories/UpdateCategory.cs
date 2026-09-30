@@ -50,7 +50,7 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
     }
 }
 
-public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
+public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<UpdateCategoryCommand, UpdateCategoryResponse>
 {
     public async Task<UpdateCategoryResponse> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
@@ -63,7 +63,7 @@ public class UpdateCategoryHandler(ICategoryRepository categoryRepository, IUser
 
         category.UpdatedAt = DateTime.UtcNow;
 
-        await categoryRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new UpdateCategoryResponse(
         category.Id,

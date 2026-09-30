@@ -11,12 +11,13 @@ public class DeleteTransactionHandlerTests
 {
     private readonly ITransactionRepository _transactionRepository = Substitute.For<ITransactionRepository>();
     private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
 
     private readonly DeleteTransactionHandler _handler;
 
     public DeleteTransactionHandlerTests() =>
-        _handler = new DeleteTransactionHandler(_transactionRepository, _accountRepository, _userContext);
+        _handler = new DeleteTransactionHandler(_transactionRepository, _accountRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_ValidRequest_DeletesTransaction()
@@ -31,7 +32,7 @@ public class DeleteTransactionHandlerTests
 
         // Assert
         Assert.NotNull(transaction.DeletedAt);
-        await _transactionRepository.Received(1).SaveChangesAsync(CancellationToken.None);
+        await _unitOfWork.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -77,7 +78,7 @@ public class DeleteTransactionHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             _handler.Handle(new DeleteTransactionCommand(id, accountId), CancellationToken.None));
-        await _transactionRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private void ConfigureRepositories(Transaction transaction, Account account)

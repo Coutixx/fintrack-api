@@ -33,7 +33,7 @@ public class RegisterValidator : AbstractValidator<RegisterCommand>
     }
 }
 
-public class RegisterHandler(IUserRepository userRepository, ITokenService tokenService, IPasswordHasher passwordHasher) : IRequestHandler<RegisterCommand, RegisterResponse>
+public class RegisterHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ITokenService tokenService, IPasswordHasher passwordHasher) : IRequestHandler<RegisterCommand, RegisterResponse>
 {
     public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -52,6 +52,7 @@ public class RegisterHandler(IUserRepository userRepository, ITokenService token
         };
 
         await userRepository.AddAsync(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var token = tokenService.GenerateToken(user);
 

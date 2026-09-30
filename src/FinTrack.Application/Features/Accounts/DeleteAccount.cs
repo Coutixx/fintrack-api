@@ -15,7 +15,7 @@ public class DeleteAccountValidator : AbstractValidator<DeleteAccountCommand>
     }
 }
 
-public class DeleteAccountHandler(IAccountRepository accountRepository, IUserContext userContext) : IRequestHandler<DeleteAccountCommand, Unit>
+public class DeleteAccountHandler(IAccountRepository accountRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<DeleteAccountCommand, Unit>
 {
     public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class DeleteAccountHandler(IAccountRepository accountRepository, IUserCon
 
         account.DeletedAt = DateTime.UtcNow;
 
-        await accountRepository.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }
 }

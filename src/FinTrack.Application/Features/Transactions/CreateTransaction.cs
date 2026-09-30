@@ -51,7 +51,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionCom
     }
 }
 
-public class CreateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUserContext userContext) : IRequestHandler<CreateTransactionCommand, CreateTransactionResponse>
+public class CreateTransactionHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IUserContext userContext) : IRequestHandler<CreateTransactionCommand, CreateTransactionResponse>
 {
     public async Task<CreateTransactionResponse> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
@@ -83,6 +83,7 @@ public class CreateTransactionHandler(ITransactionRepository transactionReposito
         };
 
         await transactionRepository.AddAsync(transaction, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return new CreateTransactionResponse(transaction.Id, transaction.AccountId);
     }
 }

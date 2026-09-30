@@ -10,10 +10,11 @@ namespace FinTrack.UnitTests.Features.Accounts;
 public class UpdateAccountHandlerTests
 {
     private readonly IAccountRepository _accountRepository = Substitute.For<IAccountRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IUserContext _userContext = Substitute.For<IUserContext>();
     private readonly UpdateAccountHandler _handler;
     public UpdateAccountHandlerTests() =>
-        _handler = new UpdateAccountHandler(_accountRepository, _userContext);
+        _handler = new UpdateAccountHandler(_accountRepository, _unitOfWork, _userContext);
 
     [Fact]
     public async Task Handle_ValidRequest_UpdatesAccount()
@@ -38,7 +39,7 @@ public class UpdateAccountHandlerTests
         Assert.Equal("Nome Novo", response.Name);
         Assert.Equal(AccountType.Checking, response.Type);
         Assert.Equal(id, response.Id);
-        await _accountRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -53,6 +54,6 @@ public class UpdateAccountHandlerTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
         _handler.Handle(new UpdateAccountCommand(id, "Nome novo", AccountType.Checking), CancellationToken.None));
-        await _accountRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

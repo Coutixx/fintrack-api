@@ -35,7 +35,7 @@ public class UpdateTransactionHandlerTests
             CategoryId = categoryId,
             Description = "Descrição antiga",
             Amount = 100,
-            Type = TransactionType.Income,
+            Type = TransactionType.Expense,
             Date = date.AddDays(-1),
             Status = TransactionStatus.Pending
         };
@@ -82,7 +82,7 @@ public class UpdateTransactionHandlerTests
             AccountId = accountId,
             CategoryId = categoryId,
             Amount = 100,
-            Type = TransactionType.Income,
+            Type = TransactionType.Expense,
             Status = TransactionStatus.Paid
         };
         var account = new Account { Id = accountId, UserId = userId, CurrentBalance = 200 };
@@ -105,7 +105,55 @@ public class UpdateTransactionHandlerTests
         await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.Equal(50, account.CurrentBalance);
+        Assert.Equal(250, account.CurrentBalance);
+    }
+
+    [Theory]
+    [InlineData(TransactionStatus.Pending, TransactionStatus.Paid, 150)]
+    [InlineData(TransactionStatus.Paid, TransactionStatus.Pending, 300)]
+    [InlineData(TransactionStatus.Paid, TransactionStatus.Cancelled, 300)]
+    [InlineData(TransactionStatus.Cancelled, TransactionStatus.Paid, 150)]
+    [InlineData(TransactionStatus.Pending, TransactionStatus.Pending, 200)]
+    [InlineData(TransactionStatus.Cancelled, TransactionStatus.Cancelled, 200)]
+    [InlineData(TransactionStatus.Paid, TransactionStatus.Paid, 250)]
+    public async Task Handle_ValidStatusTransition_UpdatesBalanceCorrectly(
+        TransactionStatus oldStatus,
+        TransactionStatus newStatus,
+        decimal expectedBalance)
+    {
+        var id = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var transaction = new Transaction
+        {
+            Id = id,
+            AccountId = accountId,
+            CategoryId = categoryId,
+            Amount = 100,
+            Type = TransactionType.Expense,
+            Status = oldStatus
+        };
+        var account = new Account { Id = accountId, UserId = userId, CurrentBalance = 200 };
+        var category = new Category { Id = categoryId, UserId = userId, Type = TransactionType.Expense };
+        var request = new UpdateTransactionCommand(
+            id,
+            accountId,
+            "Despesa atualizada",
+            50,
+            TransactionType.Expense,
+            new DateOnly(2026, 09, 10),
+            newStatus);
+
+        _userContext.UserId.Returns(userId);
+        _transactionRepository.GetByIdAsync(id, userId, accountId, CancellationToken.None).Returns(transaction);
+        _categoryRepository.GetByIdAsync(categoryId, userId, CancellationToken.None).Returns(category);
+        _accountRepository.GetByIdAsync(accountId, userId, CancellationToken.None).Returns(account);
+
+        await _handler.Handle(request, CancellationToken.None);
+
+        Assert.Equal(expectedBalance, account.CurrentBalance);
+        await _transactionRepository.Received(1).SaveChangesAsync(CancellationToken.None);
     }
 
     [Fact]
